@@ -12,10 +12,6 @@ const splitNovel40 = (novel) => {
             temp = temp.substring(41);
         }
         str += "<p>" + temp + "</p>";
-        // if(line.length > 40){
-        //     str += "<p>" + line + "</p>";
-        // }
-        // str += "<p>" + (line === "" ? "　" : line) + "</p>";
     });
     return str;
 }
