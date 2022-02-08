@@ -1,5 +1,7 @@
 "use strict";
 
+// console.log(sample);
+
 const novel = document.getElementById("novel");
 
-novel.innerText = "Hello World";
+novel.innerText = sample;
