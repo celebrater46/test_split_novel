@@ -3,4 +3,17 @@
 body {
     background-color: black;
     color: silver;
+    text-align: center;
+}
+
+div#containter{
+    width: 1000px;
+    height: 100vh;
+    margin: 0 auto;
+    background-color: #111111;
+}
+
+div#novel{
+    display: flex;
+    justify-content: space-between;
 }
