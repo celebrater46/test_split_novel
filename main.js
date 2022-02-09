@@ -3,6 +3,36 @@
 const novel = document.getElementById("novel");
 const testLine = "　勤務先は大手家電量販店ビックリカメラ｜六出那《ろくでな》支店。無論、正社員などではない。ここに正社員という概念は存在しない。会社の都合でいつでも｜馘首《クビ》にされる百円ライターさながらの使い捨て非正規社員だ。\n";
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
+const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜堕天男《ルシファー》。";
+
+// ルビが規定文字数を超える場合、ルビを消滅させる
+const deleteRuby = (line) => {
+    // let str = "";
+    let temp = line;
+    while(temp.indexOf("｜") != -1){
+        const start = temp.indexOf("《");
+        const end = temp.indexOf("》");
+        const ruby = temp.substring(start, end + 1);
+        temp = temp.replace("｜", "");
+        temp = temp.replace(ruby, "");
+    }
+    return temp;
+}
+
+const testSeparateLineHasRuby = (line, max) => {
+    // testLine3、｜が40文字目にくる場合だと、漢字一文字のルビなら普通に合法
+    // 逆にもっと手前に｜があっても、漢字が多いと違法
+    // ルビ漢字が一行の文字数に収まる範囲でも、フリガナの文字数が多い場合は、スケールで実測
+    const bar = line.indexOf("｜");
+    const start = line.indexOf("《");
+    const end = line.indexOf("》");
+
+
+    if(start - bar - 1 > max){ return false; } // 一行の最大文字数を超える場合は自動的にエラーとする
+    if(bar > -1){
+
+    }
+}
 
 const countCharsInRuby = (line) => {
     if(line.indexOf("｜") == -1){
@@ -132,8 +162,8 @@ const splitNovel40_includeRuby = (novel) => {
     let str = "";
     separated.map((line) => {
         let temp = line;
-        if(rubyExists(temp){
-
+        if(rubyExists(temp)) {
+            return;
         } else {
             while(temp.length > 40){
                 str += "<p>" + temp.substring(0, 40) + "</p>";
@@ -175,5 +205,6 @@ const splitNovel = (novel) => {
 // novel.innerText = countCharsExceptRuby(testLine);
 // console.log(testLine.indexOf("｜")); // 19
 // console.log(countCharsInRuby(testLine));
-console.log(convertToEvenAllocation(testLine2));
-novel.innerHTML = convertToEvenAllocation(testLine2); // 107
+// console.log(convertToEvenAllocation(testLine2));
+// novel.innerHTML = convertToEvenAllocation(testLine2); // 107
+console.log(deleteRuby(testLine));
