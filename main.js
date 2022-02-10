@@ -1,9 +1,9 @@
 "use strict";
 
 const novel = document.getElementById("novel");
-const testLine = "　勤務先は大手家電量販店ビックリカメラ｜六出那《ろくでな》支店。無論、正社員などではない。ここに｜正社員という概念《サラリーマン》は｜存在しない《ノット・イクシスト》。会社の都合でいつでも｜馘首《クビ》にされる百円ライターさながらの使い捨て非正規社員だ。\n";
+const testLine = "　勤務先は大手家電量販店ビックリカメラ｜六出那《ろくでな》支店。無論、正社員などではない。ここに｜正社員という概念《サラリーマン》は存在しない。会社の都合でいつでも｜馘首《クビ》にされる百円ライターさながらの使い捨て非正規社員だ。\n";
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
-const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８｜堕天男《ルシファー》。";
+const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０｜堕天男《ルシファー》。";
 
 const convertRuby = (line) => {
     // <ruby><rb>錚々</rb><rp>(</rp><rt>そうそう</rt><rp>)</rp></ruby>
@@ -20,6 +20,17 @@ const convertRuby = (line) => {
         return str;
     } else {
         return line;
+    }
+}
+
+// ルビを含めた文字列が1行に収まるかどうか（収まるなら true）
+const checkWithinLine = (line, max) => {
+    const p = document.getElementById("stealth");
+    p.innerText = line;
+    if(p.clientWidth < max){
+        return true;
+    } else {
+        return false;
     }
 }
 
@@ -196,6 +207,13 @@ const rubyExists = (line) => {
 // 一度隠し div（body直下で、width が縛られないように）に出力して width を計測し、
 // 規定幅を上回るようなら手前の文字を次の行に送って、という方法はどうか。
 
+// まず、ルビ記号とフリガナを除いた文字数をカウントし、一行の最大文字数までのワードを切り抜いてステルスPに入れる。
+// width < max ならば、そのまま改行させる。
+// width >= max ならば、何らかのルビが含まれている可能性がある。
+// ので、一文字前で改行して、ステルスPに入れてみる。
+// 一文字前に》が存在する場合、ルビ漢字ごと次の行に持っていく。
+// まだ width >= max の場合、その前の文字で改行して……
+
 
 // フリガナは漢字の文字数の 2 倍以下か？（return は倍率）
 const rubyPerWord = (ruby) => {
@@ -289,4 +307,5 @@ const splitNovel = (novel) => {
 // console.log(rubyWithinRange(testLine2, 40, searchBar(testLine2, 40)));
 // console.log(getWidth(testLine));
 // console.log(convertRuby(testLine));
-novel.innerHTML = "<p>" + convertRuby(testLine) + "</p>";
+// novel.innerHTML = "<p>" + convertRuby(testLine) + "</p>";
+console.log(checkWithinLine(testLine3, 1000));
