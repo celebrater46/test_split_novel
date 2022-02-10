@@ -1,9 +1,42 @@
 "use strict";
 
+const rubyMax = 30; // ルビ漢字の最大文字数
+const furiganaMax = 60; // フリガナの最大文字数
+
 const novel = document.getElementById("novel");
-const testLine = "　勤務先は大手家電量販店ビックリカメラ｜六出那《ろくでな》支店。無論、正社員などではない。ここに｜正社員という概念《サラリーマン》は｜存在しない《ナッシング》。会社の都合でいつでも｜馘首《クビ》にされる百円ライターさながらの使い捨て｜非正規社員《イレギュラー》";
+const testLine = "　勤務先は大手家電量販店ビックリカメラ｜六出那《ろくでな》支店。無論、正社員などではない。ここに｜《サラリーマン》は｜存在しない《ナッシング》。会社の都合でいつでも｜馘首《クビ》にされる百円ライターさながらの使い捨て｜非正規社員《イレギュラー》";
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
-const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜堕天男《ルシファー》。";
+const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜《ルシファー》。";
+
+const getBackMountBracket = (line) => {
+    let str = line;
+    str = str.replace("(((", "《");
+    str = str.replace(")))", "》");
+    return str;
+}
+
+// 「｜《」など、山括弧をそのまま使いたい場合のエスケープ処理
+// 《》をいったん ((( ))) に変換する
+const escapeMountBracket = (line) => {
+    let str = line;
+    while(str.indexOf("｜《") > -1){
+        const index = str.indexOf("｜《");
+        let strAfterBar = str.substr(index);
+        strAfterBar = strAfterBar.replace("｜《", "(((");
+        strAfterBar = strAfterBar.replace("》", ")))");
+        str = str.substr(0, index) + strAfterBar;
+    }
+    return str;
+}
+
+// ルビを除いた文字数をカウントする
+const countCharsExceptRuby = (line) => {
+    let str = line;
+    while(str.indexOf("《") > -1){
+        const rt = str.substring(str.indexOf("《"), str.indexOf("》"))
+        str = str.replace()
+    }
+}
 
 const convertRuby = (line) => {
     // <ruby><rb>錚々</rb><rp>(</rp><rt>そうそう</rt><rp>)</rp></ruby>
@@ -42,6 +75,7 @@ const exceptionalReturn = (line, maxWidth) => {
     const p = document.getElementById("stealth");
     p.innerText = str;
     while(p.clientWidth >= maxWidth){
+        // ステルス<p>に表示して規定サイズオーバーなら 1 文字ずつ減らす
         const index = getPreviousBrPoint(str);
         str = str.substr(0, index);
         p.innerHTML = str;
@@ -125,6 +159,7 @@ const returnRuby = (line, max) => {
 
 // ルビが規定文字数を超える場合、ルビを消滅させる
 const deleteRuby = (line) => {
+
     // let str = "";
     let temp = line;
     while(temp.indexOf("｜") != -1){
@@ -341,4 +376,11 @@ const splitNovel = (novel) => {
 // console.log(checkWithinLine(testLine3, 1000));
 // console.log(convertRuby(testLine));
 // console.log(getPreviousBrPoint(convertRuby(testLine)));
-console.log(exceptionalReturn(convertRuby(testLine), 1000));
+// console.log(exceptionalReturn(convertRuby(testLine), 1000));
+// console.log(escapeMountBracket(testLine3));
+// console.log(getBackMountBracket(escapeMountBracket(testLine)));
+const escape = escapeMountBracket(testLine);
+console.log(escape);
+const converted = convertRuby(escape);
+const gotBack = getBackMountBracket(converted);
+console.log(gotBack)
