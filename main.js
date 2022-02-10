@@ -9,11 +9,6 @@ const convertRuby = (line) => {
     // <ruby><rb>錚々</rb><rp>(</rp><rt>そうそう</rt><rp>)</rp></ruby>
     if(line.indexOf("｜") > -1 && line.indexOf("《") > -1 && line.indexOf("》") > -1){
         let str = line;
-        // while(line.indexOf("｜") > -1){
-        //     str = str.replace("｜", "<ruby><rb>");
-        //     str = str.replace("《", "</rb><rp>(</rp><rt>");
-        //     str = str.replace("》", "</rt><rp>)</rp></ruby>");
-        // }
         str = str.replace(/｜/g, "<ruby><rb>");
         str = str.replace(/《/g, "</rb><rp>(</rp><rt>");
         str = str.replace(/》/g, "</rt><rp>)</rp></ruby>");
@@ -25,7 +20,6 @@ const convertRuby = (line) => {
 
 // 一行に収まらない文字列の最後から2番めの文字の index を取得する
 // 最後が </ruby> だった場合、<ruby> の先頭が何文字めかを数字で返す
-// const getIndexOfLastRuby = (line) => {
 const getPreviousBrPoint = (line) => {
     if(line.substr(-1) === ">" && line.match(/<ruby>/) !== null){
         let str = line;
@@ -35,13 +29,6 @@ const getPreviousBrPoint = (line) => {
             str = str.replace("<ruby>", "<xxxx>");
         }
         return index;
-        // let str = line.replace(/<ruby>/g, "｜<ruby>");
-        // let num = str.indexOf("｜");
-        // while(str.indexOf("｜") > -1){
-        //     num = str.indexOf("｜");
-        //     str = str.substring(num + 1);
-        // }
-        // return num;
     } else {
         return line.length - 1;
     }
@@ -54,15 +41,10 @@ const exceptionalReturn = (line, maxWidth) => {
     let str = line;
     const p = document.getElementById("stealth");
     p.innerText = str;
-    // let i = line.length;
     while(p.clientWidth >= maxWidth){
-        // if(str.substr(-1) === ">"){
-        //     str = str.replace(/<ruby>/g, "｜<ruby>");
-        // }
         const index = getPreviousBrPoint(str);
         str = str.substr(0, index);
         p.innerHTML = str;
-        // i--;
     }
     if(str.length === line.length){
         return [ line ];
