@@ -1,4 +1,5 @@
 "use strict";
+// import {Line} from "Line.js";
 
 const rubyMax = 30; // ルビ漢字の最大文字数
 const furiganaMax = 60; // フリガナの最大文字数
@@ -8,26 +9,26 @@ const testLine = "　勤務先は大手家電量販店ビックリカメラ｜�
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
 const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜《ルシファー》。";
 
-const getBackMountBracket = (line) => {
-    let str = line;
-    str = str.replace("(((", "《");
-    str = str.replace(")))", "》");
-    return str;
-}
-
-// 「｜《」など、山括弧をそのまま使いたい場合のエスケープ処理
-// 《》をいったん ((( ))) に変換する
-const escapeMountBracket = (line) => {
-    let str = line;
-    while(str.indexOf("｜《") > -1){
-        const index = str.indexOf("｜《");
-        let strAfterBar = str.substr(index);
-        strAfterBar = strAfterBar.replace("｜《", "(((");
-        strAfterBar = strAfterBar.replace("》", ")))");
-        str = str.substr(0, index) + strAfterBar;
-    }
-    return str;
-}
+// const getBackMountBracket = (line) => {
+//     let str = line;
+//     str = str.replace("(((", "《");
+//     str = str.replace(")))", "》");
+//     return str;
+// }
+//
+// // 「｜《」など、山括弧をそのまま使いたい場合のエスケープ処理
+// // 《》をいったん ((( ))) に変換する
+// const escapeMountBracket = (line) => {
+//     let str = line;
+//     while(str.indexOf("｜《") > -1){
+//         const index = str.indexOf("｜《");
+//         let strAfterBar = str.substr(index);
+//         strAfterBar = strAfterBar.replace("｜《", "(((");
+//         strAfterBar = strAfterBar.replace("》", ")))");
+//         str = str.substr(0, index) + strAfterBar;
+//     }
+//     return str;
+// }
 
 // ルビを除いた文字数をカウントする
 const countCharsExceptRuby = (line) => {
@@ -291,7 +292,7 @@ const rubyExists = (line) => {
 // id
 // 本文
 // 均等割り付けを行うか否か
-// 
+//
 
 
 // フリガナは漢字の文字数の 2 倍以下か？（return は倍率）
@@ -393,8 +394,14 @@ const splitNovel = (novel) => {
 // console.log(exceptionalReturn(convertRuby(testLine), 1000));
 // console.log(escapeMountBracket(testLine3));
 // console.log(getBackMountBracket(escapeMountBracket(testLine)));
-const escape = escapeMountBracket(testLine);
-console.log(escape);
-const converted = convertRuby(escape);
-const gotBack = getBackMountBracket(converted);
-console.log(gotBack)
+// const escape = escapeMountBracket(testLine);
+// console.log(escape);
+// const converted = convertRuby(escape);
+// const gotBack = getBackMountBracket(converted);
+// console.log(gotBack)
+
+const line = new Line(1, testLine);
+line.test();
+
+const line2 = new Line(2, testLine2);
+line2.test();
