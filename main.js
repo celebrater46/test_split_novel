@@ -1,9 +1,9 @@
 "use strict";
 
 const novel = document.getElementById("novel");
-const testLine = "　勤務先は大手家電量販店ビックリカメラ｜六出那《ろくでな》支店。無論、正社員などではない。ここに｜正社員という概念《サラリーマン》は存在しない。会社の都合でいつでも｜馘首《クビ》にされる百円ライターさながらの使い捨て非正規社員だ。\n";
+const testLine = "　勤務先は大手家電量販店ビックリカメラ｜六出那《ろくでな》支店。無論、正社員などではない。ここに｜正社員という概念《サラリーマン》は｜存在しない《ナッシング》。会社の都合でいつでも｜馘首《クビ》にされる百円ライターさながらの使い捨て｜非正規社員《イレギュラー》";
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
-const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０｜堕天男《ルシファー》。";
+const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜堕天男《ルシファー》。";
 
 const convertRuby = (line) => {
     // <ruby><rb>錚々</rb><rp>(</rp><rt>そうそう</rt><rp>)</rp></ruby>
@@ -23,11 +23,59 @@ const convertRuby = (line) => {
     }
 }
 
+// 一行に収まらない文字列の最後から2番めの文字の index を取得する
+// 最後が </ruby> だった場合、<ruby> の先頭が何文字めかを数字で返す
+// const getIndexOfLastRuby = (line) => {
+const getPreviousBrPoint = (line) => {
+    if(line.substr(-1) === ">" && line.match(/<ruby>/) !== null){
+        let str = line;
+        let index = -1;
+        while(str.match(/<ruby>/) !== null){
+            index = str.indexOf("<ruby>");
+            str = str.replace("<ruby>", "<xxxx>");
+        }
+        return index;
+        // let str = line.replace(/<ruby>/g, "｜<ruby>");
+        // let num = str.indexOf("｜");
+        // while(str.indexOf("｜") > -1){
+        //     num = str.indexOf("｜");
+        //     str = str.substring(num + 1);
+        // }
+        // return num;
+    } else {
+        return line.length - 1;
+    }
+}
+
+// 一行に収まらない文を分割する
+// ruby タグに変換した後の文章を使用（そうしないと正確な width が得られない）
+// いったん <ruby> を ｜<ruby> にしてみてはどうか
+const exceptionalReturn = (line, maxWidth) => {
+    let str = line;
+    const p = document.getElementById("stealth");
+    p.innerText = str;
+    // let i = line.length;
+    while(p.clientWidth >= maxWidth){
+        // if(str.substr(-1) === ">"){
+        //     str = str.replace(/<ruby>/g, "｜<ruby>");
+        // }
+        const index = getPreviousBrPoint(str);
+        str = str.substr(0, index);
+        p.innerHTML = str;
+        // i--;
+    }
+    if(str.length === line.length){
+        return [ line ];
+    } else {
+        return [ str, line.substring(str.length) ];
+    }
+}
+
 // ルビを含めた文字列が1行に収まるかどうか（収まるなら true）
-const checkWithinLine = (line, max) => {
+const checkWithinLine = (line, maxWidth) => {
     const p = document.getElementById("stealth");
     p.innerText = line;
-    if(p.clientWidth < max){
+    if(p.clientWidth < maxWidth){
         return true;
     } else {
         return false;
@@ -308,4 +356,7 @@ const splitNovel = (novel) => {
 // console.log(getWidth(testLine));
 // console.log(convertRuby(testLine));
 // novel.innerHTML = "<p>" + convertRuby(testLine) + "</p>";
-console.log(checkWithinLine(testLine3, 1000));
+// console.log(checkWithinLine(testLine3, 1000));
+// console.log(convertRuby(testLine));
+// console.log(getPreviousBrPoint(convertRuby(testLine)));
+console.log(exceptionalReturn(convertRuby(testLine), 1000));
