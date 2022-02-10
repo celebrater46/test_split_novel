@@ -18,8 +18,9 @@ div#containter{
 }
 
 div#novel p{
-    display: flex;
-    justify-content: space-between;
+    /*display: flex;*/
+    /*justify-content: space-between;*/
+    text-align: left;
 }
 
 p#stealth{

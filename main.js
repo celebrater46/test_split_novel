@@ -1,13 +1,31 @@
 "use strict";
 
 const novel = document.getElementById("novel");
-const testLine = "　勤務先は大手家電量販店ビックリカメラ｜六出那《ろくでな》支店。無論、正社員などではない。ここに正社員という概念は存在しない。会社の都合でいつでも｜馘首《クビ》にされる百円ライターさながらの使い捨て非正規社員だ。\n";
+const testLine = "　勤務先は大手家電量販店ビックリカメラ｜六出那《ろくでな》支店。無論、正社員などではない。ここに｜正社員という概念《サラリーマン》は｜存在しない《ノット・イクシスト》。会社の都合でいつでも｜馘首《クビ》にされる百円ライターさながらの使い捨て非正規社員だ。\n";
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
 const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８｜堕天男《ルシファー》。";
 
+const convertRuby = (line) => {
+    // <ruby><rb>錚々</rb><rp>(</rp><rt>そうそう</rt><rp>)</rp></ruby>
+    if(line.indexOf("｜") > -1 && line.indexOf("《") > -1 && line.indexOf("》") > -1){
+        let str = line;
+        // while(line.indexOf("｜") > -1){
+        //     str = str.replace("｜", "<ruby><rb>");
+        //     str = str.replace("《", "</rb><rp>(</rp><rt>");
+        //     str = str.replace("》", "</rt><rp>)</rp></ruby>");
+        // }
+        str = str.replace(/｜/g, "<ruby><rb>");
+        str = str.replace(/《/g, "</rb><rp>(</rp><rt>");
+        str = str.replace(/》/g, "</rt><rp>)</rp></ruby>");
+        return str;
+    } else {
+        return line;
+    }
+}
+
 const getWidth = (line) => {
     const p = document.getElementById("stealth");
-    // p.innerText = line;
+    p.innerText = line;
     return p.clientWidth;
     // return p.clientHeight;
 }
@@ -269,4 +287,6 @@ const splitNovel = (novel) => {
 // console.log(deleteRuby(testLine));
 // console.log(returnRuby(testLine3, 40));
 // console.log(rubyWithinRange(testLine2, 40, searchBar(testLine2, 40)));
-console.log(getWidth(testLine3));
+// console.log(getWidth(testLine));
+// console.log(convertRuby(testLine));
+novel.innerHTML = "<p>" + convertRuby(testLine) + "</p>";
