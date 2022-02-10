@@ -8,6 +8,8 @@ class Line {
         this.furiganaMax = 60; // フリガナの最大文字数
     }
 
+    // １２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜堕天男《ルシファー》。
+
     // 全体の流れ
     // まず、山括弧をそのまま表示する指定（例：｜《ルシファー》）をエスケープする
     // ルビ指定を<ruby>タグ化する（一度<p>タグに放り込んで幅を測定するため）
@@ -17,8 +19,8 @@ class Line {
     // エスケープした山括弧を元に戻す
     getBackMountBracket(line) {
         let str = line;
-        str = str.replace("(((", "《");
-        str = str.replace(")))", "》");
+        str = str.replace("＜＜", "《");
+        str = str.replace("＞＞", "》");
         return str;
     }
 
@@ -29,8 +31,8 @@ class Line {
         while(str.indexOf("｜《") > -1){
             const index = str.indexOf("｜《");
             let strAfterBar = str.substr(index);
-            strAfterBar = strAfterBar.replace("｜《", "(((");
-            strAfterBar = strAfterBar.replace("》", ")))");
+            strAfterBar = strAfterBar.replace("｜《", "＜＜");
+            strAfterBar = strAfterBar.replace("》", "＞＞");
             str = str.substr(0, index) + strAfterBar;
         }
         // return str;
@@ -50,12 +52,24 @@ class Line {
     deleteRuby() {
         let tempStr = this.original;
         while(tempStr.indexOf("｜") != -1){
+            const bar = tempStr.indexOf("｜");
             const start = tempStr.indexOf("《");
             const end = tempStr.indexOf("》");
             const ruby = tempStr.substring(start, end + 1);
-            tempStr = tempStr.replace("｜", "");
-            tempStr = tempStr.replace(ruby, "");
+            if(start - bar - 1 > this.rubyMax || end - start - 1 > this.furiganaMax){
+                tempStr = tempStr.replace("｜", "");
+                tempStr = tempStr.replace(ruby, "");
+            } else {
+                // 規定文字内ならルビ指定をエスケープ
+                tempStr = tempStr.replace("｜", "##");
+                console.log("const ruby: " + ruby);
+                console.log("const ruby.substring: " + ruby.substring(1, ruby.length - 1));
+                tempStr = tempStr.replace(ruby, "＜＜" + ruby.substring(1, ruby.length - 1) + "＞＞");
+            }
         }
+        tempStr = tempStr.replace(/##/g, "｜");
+        tempStr = tempStr.replace(/＜＜/g, "《");
+        tempStr = tempStr.replace(/＞＞/g, "》");
         // return tempStr;
         this.original = tempStr;
     }
