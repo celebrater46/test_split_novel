@@ -1,5 +1,9 @@
 @charset "UTF-8";
 
+html{
+    font-size: 19px;
+}
+
 body {
     background-color: black;
     color: silver;
@@ -13,7 +17,15 @@ div#containter{
     background-color: #111111;
 }
 
-div#novel{
+div#novel p{
     display: flex;
     justify-content: space-between;
+}
+
+p#stealth{
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    width: auto;
+    opacity: 0.5;
 }

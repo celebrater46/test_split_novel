@@ -3,7 +3,66 @@
 const novel = document.getElementById("novel");
 const testLine = "　勤務先は大手家電量販店ビックリカメラ｜六出那《ろくでな》支店。無論、正社員などではない。ここに正社員という概念は存在しない。会社の都合でいつでも｜馘首《クビ》にされる百円ライターさながらの使い捨て非正規社員だ。\n";
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
-const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜堕天男《ルシファー》。";
+const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８｜堕天男《ルシファー》。";
+
+const getWidth = (line) => {
+    const p = document.getElementById("stealth");
+    // p.innerText = line;
+    return p.clientWidth;
+    // return p.clientHeight;
+}
+
+// 改行またぎルビの縦棒が何番目にあるか検出
+const searchBar = (line, max) => {
+    if(line.indexOf("｜") > -1){
+        let i = max;
+        // console.log(i);
+        while(i >= 0){
+            const char = line.substr(i, 1);
+            console.log(char);
+            if(char === "｜"){
+                return i;
+            }
+            i--;
+        }
+    }
+    return false;
+}
+
+// ルビ漢字の途中で改行されるか（｜堕天<br>男《ルシファー》）
+const rubyWithinRange = (line, max, bar) => {
+    if(bar === false){ // そもそもルビが存在しない
+        // console.log("ruby is nothing");
+        return true;
+    } else {
+        let i = bar;
+        while(i <= max + 1){ // 規定文字数内に《 が見つかれば true
+            const char = line.substr(i, 1);
+            console.log(char);
+            if(char === "《"){
+                return true;
+            }
+            i++;
+        }
+        return false;
+    }
+}
+
+// 改行コードの手前の文字がルビ漢字の途中だった場合、ルビタグごと改行する
+const returnRuby = (line, max) => {
+    const bar = searchBar(line, max); // num or false
+    console.log("bar: " + bar);
+    let array = [];
+    if(bar > 0){
+        return [
+            "<p>" + line.substring(0, bar) + "</p>",
+            "<p>" + line.substring(bar)
+        ];
+    } else {
+        // bar が 0 なら改行しない
+        return "<p>" + line + "</p>";
+    }
+}
 
 // ルビが規定文字数を超える場合、ルビを消滅させる
 const deleteRuby = (line) => {
@@ -207,4 +266,7 @@ const splitNovel = (novel) => {
 // console.log(countCharsInRuby(testLine));
 // console.log(convertToEvenAllocation(testLine2));
 // novel.innerHTML = convertToEvenAllocation(testLine2); // 107
-console.log(deleteRuby(testLine));
+// console.log(deleteRuby(testLine));
+// console.log(returnRuby(testLine3, 40));
+// console.log(rubyWithinRange(testLine2, 40, searchBar(testLine2, 40)));
+console.log(getWidth(testLine3));
