@@ -158,20 +158,20 @@ const returnRuby = (line, max) => {
     }
 }
 
-// ルビが規定文字数を超える場合、ルビを消滅させる
-const deleteRuby = (line) => {
-
-    // let str = "";
-    let temp = line;
-    while(temp.indexOf("｜") != -1){
-        const start = temp.indexOf("《");
-        const end = temp.indexOf("》");
-        const ruby = temp.substring(start, end + 1);
-        temp = temp.replace("｜", "");
-        temp = temp.replace(ruby, "");
-    }
-    return temp;
-}
+// // ルビが規定文字数を超える場合、ルビを消滅させる
+// const deleteRuby = (line) => {
+//
+//     // let str = "";
+//     let temp = line;
+//     while(temp.indexOf("｜") != -1){
+//         const start = temp.indexOf("《");
+//         const end = temp.indexOf("》");
+//         const ruby = temp.substring(start, end + 1);
+//         temp = temp.replace("｜", "");
+//         temp = temp.replace(ruby, "");
+//     }
+//     return temp;
+// }
 
 const testSeparateLineHasRuby = (line, max) => {
     // testLine3、｜が40文字目にくる場合だと、漢字一文字のルビなら普通に合法
