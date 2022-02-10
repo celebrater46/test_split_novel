@@ -39,18 +39,18 @@ const countCharsExceptRuby = (line) => {
     }
 }
 
-// ｜堕天男《ルシファー》 -> <ruby><rb>堕天男</rb><rp>(</rp><rt>ルシファー</rt><rp>)</rp></ruby>
-const convertRuby = (line) => {
-    if(line.indexOf("｜") > -1 && line.indexOf("《") > -1 && line.indexOf("》") > -1){
-        let str = line;
-        str = str.replace(/｜/g, "<ruby><rb>");
-        str = str.replace(/《/g, "</rb><rp>(</rp><rt>");
-        str = str.replace(/》/g, "</rt><rp>)</rp></ruby>");
-        return str;
-    } else {
-        return line;
-    }
-}
+// // ｜堕天男《ルシファー》 -> <ruby><rb>堕天男</rb><rp>(</rp><rt>ルシファー</rt><rp>)</rp></ruby>
+// const convertRuby = (line) => {
+//     if(line.indexOf("｜") > -1 && line.indexOf("《") > -1 && line.indexOf("》") > -1){
+//         let str = line;
+//         str = str.replace(/｜/g, "<ruby><rb>");
+//         str = str.replace(/《/g, "</rb><rp>(</rp><rt>");
+//         str = str.replace(/》/g, "</rt><rp>)</rp></ruby>");
+//         return str;
+//     } else {
+//         return line;
+//     }
+// }
 
 // 一行に収まらない文字列の最後から2番めの文字の index を取得する
 // 最後が </ruby> だった場合、<ruby> の先頭が何文字めかを数字で返す
