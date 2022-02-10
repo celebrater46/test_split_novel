@@ -52,41 +52,41 @@ const countCharsExceptRuby = (line) => {
 //     }
 // }
 
-// 一行に収まらない文字列の最後から2番めの文字の index を取得する
-// 最後が </ruby> だった場合、<ruby> の先頭が何文字めかを数字で返す
-const getPreviousBrPoint = (line) => {
-    if(line.substr(-1) === ">" && line.match(/<ruby>/) !== null){
-        let str = line;
-        let index = -1;
-        while(str.match(/<ruby>/) !== null){
-            index = str.indexOf("<ruby>");
-            str = str.replace("<ruby>", "<xxxx>");
-        }
-        return index;
-    } else {
-        return line.length - 1;
-    }
-}
-
-// 一行に収まらない文を分割する
-// ruby タグに変換した後の文章を使用（そうしないと正確な width が得られない）
-// いったん <ruby> を ｜<ruby> にしてみてはどうか
-const exceptionalReturn = (line, maxWidth) => {
-    let str = line;
-    const p = document.getElementById("stealth");
-    p.innerText = str;
-    while(p.clientWidth >= maxWidth){
-        // ステルス<p>に表示して規定サイズオーバーなら 1 文字ずつ減らす
-        const index = getPreviousBrPoint(str);
-        str = str.substr(0, index);
-        p.innerHTML = str;
-    }
-    if(str.length === line.length){
-        return [ line ];
-    } else {
-        return [ str, line.substring(str.length) ];
-    }
-}
+// // 一行に収まらない文字列の最後から2番めの文字の index を取得する
+// // 最後が </ruby> だった場合、<ruby> の先頭が何文字めかを数字で返す
+// const getPreviousBrPoint = (line) => {
+//     if(line.substr(-1) === ">" && line.match(/<ruby>/) !== null){
+//         let str = line;
+//         let index = -1;
+//         while(str.match(/<ruby>/) !== null){
+//             index = str.indexOf("<ruby>");
+//             str = str.replace("<ruby>", "<xxxx>");
+//         }
+//         return index;
+//     } else {
+//         return line.length - 1;
+//     }
+// }
+//
+// // 一行に収まらない文を分割する
+// // ruby タグに変換した後の文章を使用（そうしないと正確な width が得られない）
+// // いったん <ruby> を ｜<ruby> にしてみてはどうか
+// const exceptionalReturn = (line, maxWidth) => {
+//     let str = line;
+//     const p = document.getElementById("stealth");
+//     p.innerText = str;
+//     while(p.clientWidth >= maxWidth){
+//         // ステルス<p>に表示して規定サイズオーバーなら 1 文字ずつ減らす
+//         const index = getPreviousBrPoint(str);
+//         str = str.substr(0, index);
+//         p.innerHTML = str;
+//     }
+//     if(str.length === line.length){
+//         return [ line ];
+//     } else {
+//         return [ str, line.substring(str.length) ];
+//     }
+// }
 
 // ルビを含めた文字列が1行に収まるかどうか（収まるなら true）
 const checkWithinLine = (line, maxWidth) => {
