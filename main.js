@@ -90,13 +90,13 @@ const line = new Line(1, testLine + testLine + testLine);
 // console.log(testLine + testLine + testLine);
 line.test();
 
-let ps = "";
-line.lines.map((line) => {
-    // const p = document.createTextNode(line);
-    // novel.appendChild(p);
-    ps += line;
-});
-novel.innerHTML = ps;
+// let ps = "";
+// line.lines.map((line) => {
+//     // const p = document.createTextNode(line);
+//     // novel.appendChild(p);
+//     ps += line;
+// });
+// novel.innerHTML = ps;
 
 // console.log(getFontSize());
 // const line2 = new Line(2, testLine2);

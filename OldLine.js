@@ -1,4 +1,4 @@
-class Line {
+class OldLine {
     // Before:
     // 　勤務先は大手家電量販店ビックリカメラ｜六出那《ろくでな》支店。無論、正社員などではない。ここに｜《サラリーマン》は｜存在しない《ナッシング》。会社の都合でいつでも｜馘首《クビ》にされる百円ライターさながらの使い捨て｜非正規社員《イレギュラー》である。
     // After:
@@ -13,6 +13,10 @@ class Line {
         this.original = str;
         this.lines = [];
         this.evenAllocation = false;
+        // this.rubyMax = 30; // ルビ漢字の最大文字数
+        // this.furiganaMax = 60; // フリガナの最大文字数
+        // this.maxChars = 40; // 1行あたりの最大文字数
+        // this.maxWidth = 1000; // 1行あたりの最大幅（px）
     }
 
     // １２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜堕天男《ルシファー》。
@@ -101,6 +105,22 @@ class Line {
         }
     }
 
+    // 一行に収まらない文字列の最後から2番めの文字の index を取得する
+    // 最後が </ruby> だった場合、<ruby> の先頭が何文字めかを数字で返す
+    getPreviousBrPoint(line) {
+        if(line.substr(-1) === ">" && line.match(/<ruby>/) !== null){
+            let str = line;
+            let index = -1;
+            while(str.match(/<ruby>/) !== null){
+                index = str.indexOf("<ruby>");
+                str = str.replace("<ruby>", "<xxxx>");
+            }
+            return index;
+        } else {
+            return line.length - 1;
+        }
+    }
+
     // Pタグに文字を入れてみて最大幅より小さければ true
     checkStrWithinLine(str){
         const p = document.getElementById("stealth");
@@ -112,78 +132,82 @@ class Line {
         }
     }
 
-    // 横幅が変化するルビタグかどうかの判別
-    isOversizedRuby(str){
-        const bar = str.indexOf("｜");
-        if(bar > -1){
-            const start = str.indexOf("《");
-            const end = str.indexOf("》");
-            const rb = start - bar - 1;
-            const rt = end - start - 1;
-            if(rt > rb * 2) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    testRubyWidth(str){
-        const p = document.getElementById("stealth");
-        p.innerHTML = this.encodeRuby(str);
-        return p.clientWidth;
-    }
-
-    // 行の中にルビが存在した場合、新しい改行ポイントを数字で返す
-    // getBreakPointWithRuby(line, max){
-    //     const ruby = line.indexOf("<ruby>");
-    //     if(ruby > -1 && ruby < max){
-    //         let num = ruby;
-    //         let str = line.substring(0, ruby);
-    //         while(this.checkStrWithinLine(str)){
-    //             num +
-    //         }
-    //     } else {
-    //         return max;
+    // ルビタグとフリガナを除いた文字数を計測
+    // countCharsExceptRuby(line) {
+    //     let str = this.decodeRuby(line);
+    //     while(str.indexOf("《") > -1){
+    //         const start = str.indexOf("《");
+    //         const end = str.indexOf("》");
+    //         const rt = str.substring(start, end + 1);
+    //         str = str.replace(rt, "");
     //     }
+    //     return str.length;
     // }
-
-    // separateLine(line) {
-    //     const max = this.getMaxChars();
-    //     const index = this.getBreakPointWithRuby(line, max);
-    //     // const ruby = line.indexOf("<ruby>");
-    //     this.lines.push(line.substring(0, index));
-    //     if(line.length > index){
-    //         this.separateLine(line.substring(index));
-    //     }
-    // }
-
 
     // 行の中にルビが存在する場合、最大文字数を<ruby>タグとフリガナ分延長する（return は加算値）
-
-
-    // ルビ文字の幅を予め計測して出した方がいいんじゃない？
-
-
-    // 漢字1文字に対してルビ2文字以下の場合、横幅の変化はない。
-
+    getExtendMaxChars(line) {
+        const max = this.getMaxChars();
+        let num = 0;
+        let str = "";
+        console.log(line);
+        if(line.indexOf("<ruby>") > -1){
+            // console.log("hello");
+            str = this.decodeRuby(line);
+            while(str.indexOf("｜") > -1 && str.indexOf("｜") < max){
+                // ルビひとつにつき、51 + フリガナ文字数 を追加
+                // const tempStr = str.substring(0, str.indexOf("｜"));
+                // console.log("hello");
+                // const bar = str.indexOf("｜");
+                const start = str.indexOf("《");
+                const end = str.indexOf("》");
+                // num += bar; // ルビより前の文字数
+                num += end - start - 1; // ルビ漢字の文字数
+                num += 51; // <ruby><rb></rb><rp>(</rp><rt></rt><rp>)</rp></ruby>
+                str = str.replace("｜", "‖");
+            }
+        }
+        return max + num;
+    }
 
     // 課題。ルビタグまで文字数に含まれてしまうので、最大文字数で substr する場合、
     // ルビタグが含まれていると本来のはるか手前の位置で改行されてしまうバグの解決
 
     // 一行に収まらない文を分割する
     // ruby タグに変換した後の文章を使用（そうしないと正確な width が得られない）
-
+    separateLine(line) {
+        // 最初は引数に this.original を入れる。
+        // const maxChars = this.getMaxChars();
+        const maxChars = this.getExtendMaxChars(line); // 最大文字数＋ルビ
+        // const noRuby = this.deleteRuby(line);
+        // const threeChars = noRuby.substr(maxChars - 3, 3); // 最大文字数手前の3文字
+        // console.log("maxChars: " + maxChars);
+        let str = line.substring(0, maxChars);
+        // console.log("str: " + str);
+        let index = maxChars;
+        while(this.checkStrWithinLine(str) === false){
+            // ステルス<p>に表示して規定サイズオーバーなら 1 文字ずつ減らす
+            index = this.getPreviousBrPoint(str);
+            str = str.substr(0, index);
+            console.log("Hello");
+        }
+        this.lines.push("<p>" + str + "</p>");
+        const nextStr = line.substring(index + 1);
+        if(nextStr.length > 0){
+            this.separateLine(nextStr);
+        }
+    }
 
     test() {
         // console.log("Hello World from " + this.id);
         // console.log("this.original: " + this.original);
-        // this.escapeMountBracket();
-        // this.original = this.deleteRuby(this.original, true);
-        // this.original = this.encodeRuby(this.original);
-        // this.getBackMountBracket();
-        // this.separateLine(this.original);
-        // console.log(this.lines);
-        // console.log(this.testRubyWidth("｜堕天男《ルシファー》"));
-        console.log(this.isOversizedRuby("｜堕天男《ルシファードル》"));
+        this.escapeMountBracket();
+        this.original = this.deleteRuby(this.original, true);
+        this.original = this.encodeRuby(this.original);
+        this.getBackMountBracket();
+        this.separateLine(this.original);
+        console.log(this.lines);
+        // const encoded = this.encodeRuby(this.original);
+        // console.log(this.getExtendMaxChars(encoded));
+        // console.log(maxWidth);
     }
 }
