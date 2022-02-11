@@ -3,10 +3,13 @@ class Line {
     // 　勤務先は大手家電量販店ビックリカメラ｜六出那《ろくでな》支店。無論、正社員などではない。ここに｜《サラリーマン》は｜存在しない《ナッシング》。会社の都合でいつでも｜馘首《クビ》にされる百円ライターさながらの使い捨て｜非正規社員《イレギュラー》である。
     // After:
     // <p>勤務先は大手家電量販店ビックリカメラ</p>
-    // <p>｜六出那《ろくでな》支店。無論、正社員などではない。こ</p>
-    // <p>こに｜《サラリーマン》は｜存在しない《ナッシング》。会社の</p>
-    // <p>都合でいつでも｜馘首《クビ》にされる百円ライターさ</p>
-    // <p>ながらの使い捨て｜非正規社員《イレギュラー》である。</p>
+    // <p><ruby><rb>六出那</rb><rp>(</rp><rt>ろくでな》支店。無論、正社員などではない。こ</p>
+    // <p>こに<ruby><rb></rb><rp>(</rp><rt>サラリーマン</rt><rp>)</rp></ruby>は<ruby><rb>存在しない</rb><rp>(</rp><rt>ナッシング</rt><rp>)</rp></ruby>。会社の</p>
+    // <p>都合でいつでも<ruby><rb>馘首</rb><rp>(</rp><rt>クビ</rt><rp>)</rp></ruby>にされる百円ライターさ</p>
+    // <p>ながらの使い捨て<ruby><rb>非正規社員</rb><rp>(</rp><rt>イレギュラー</rt><rp>)</rp></ruby>である。</p>
+
+    // さすがにメソッドが多くなりすぎな気がする。
+    // Line クラスは構造体にして、メソッドは外部に預けるというのも手ではないか。
 
     constructor(num, str) {
         this.id = num;
@@ -30,7 +33,7 @@ class Line {
     }
 
     // 「｜《」など、山括弧をそのまま使いたい場合のエスケープ処理
-    // 《》をいったん ((( ))) に変換する
+    // 《》をいったん〈〈　〉〉に変換する
     escapeMountBracket() {
         // console.log("this.original in escapeMouuntBracket: ");
         // console.log(this.original);
@@ -108,27 +111,52 @@ class Line {
         }
     }
 
-    // 一行に収まらない文を分割する
-    // ruby タグに変換した後の文章を使用（そうしないと正確な width が得られない）
-    // いったん <ruby> を ｜<ruby> にしてみてはどうか
-    returnOnce(prevChars) {
-        let str = prevChars + this.original;
+    checkStrWithinLine(str){
         const p = document.getElementById("stealth");
         p.innerText = str;
-        while(p.clientWidth >= this.maxWidth){
-            // ステルス<p>に表示して規定サイズオーバーなら 1 文字ずつ減らす
-            const index = this.getPreviousBrPoint(str);
-            str = str.substr(0, index);
-            p.innerHTML = str;
-        }
-        if(str.length === this.original.length){
-            this.lines.push(this.original);
-            return ""; // prevChars
+        if(p.clientWidth < this.maxWidth){
+            return true;
         } else {
-            this.lines.push(str);
-            return this.original.substring(str.length); // prevChars
+            return false;
         }
     }
+
+    // 一行に収まらない文を分割する
+    // ruby タグに変換した後の文章を使用（そうしないと正確な width が得られない）
+    separateLine(prevChars) {
+        // 最初は引数に this.original を入れる。
+        let str = prevChars;
+        let index = -1;
+        // while(p.clientWidth >= this.maxWidth){
+        while(this.checkStrWithinLine(str) === false){
+            // ステルス<p>に表示して規定サイズオーバーなら 1 文字ずつ減らす
+            index = this.getPreviousBrPoint(str);
+            str = str.substr(0, index);
+            // p.innerHTML = str;
+        }
+        this.lines.push("<p>" + str + "</p>");
+        if(index > -1){
+            this.separateLine(prevChars.substr(index));
+        }
+        // str = str.substr(index === -1 ? 0 : index);
+        // if(str.length === this.original.length){
+        //     this.lines.push(this.original);
+        //     return ""; // prevChars
+        // } else {
+        //     this.lines.push(str);
+        //     return this.original.substring(str.length); // prevChars
+        // }
+    }
+
+    // wrapLinesIntoP() {
+    //     this.lines.map((line) => {
+    //         line = "<p>" + line + "</p>";
+    //     });
+    // }
+
+    // exceptionalReturn() {
+    //     while()
+    // }
 
     // 1行に収まりきらない文字列を、収まるように分割し、<p>タグ内に入れる
     splitLine() {
@@ -152,6 +180,8 @@ class Line {
         this.escapeMountBracket();
         this.deleteRuby();
         this.convertRuby();
-        console.log(this.returnOnce(""));
+        this.getBackMountBracket();
+        this.separateLine(this.original);
+        console.log(this.lines);
     }
 }

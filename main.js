@@ -89,15 +89,15 @@ const countCharsExceptRuby = (line) => {
 // }
 
 // ルビを含めた文字列が1行に収まるかどうか（収まるなら true）
-const checkWithinLine = (line, maxWidth) => {
-    const p = document.getElementById("stealth");
-    p.innerText = line;
-    if(p.clientWidth < maxWidth){
-        return true;
-    } else {
-        return false;
-    }
-}
+// const checkWithinLine = (line, maxWidth) => {
+//     const p = document.getElementById("stealth");
+//     p.innerText = line;
+//     if(p.clientWidth < maxWidth){
+//         return true;
+//     } else {
+//         return false;
+//     }
+// }
 
 const getWidth = (line) => {
     const p = document.getElementById("stealth");
@@ -403,5 +403,13 @@ const splitNovel = (novel) => {
 const line = new Line(1, testLine);
 line.test();
 
-const line2 = new Line(2, testLine2);
-line2.test();
+let ps = "";
+line.lines.map((line) => {
+    // const p = document.createTextNode(line);
+    // novel.appendChild(p);
+    ps += line;
+});
+novel.innerHTML = ps;
+
+// const line2 = new Line(2, testLine2);
+// line2.test();
