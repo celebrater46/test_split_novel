@@ -8,9 +8,6 @@ class Line {
     // <p>都合でいつでも<ruby><rb>馘首</rb><rp>(</rp><rt>クビ</rt><rp>)</rp></ruby>にされる百円ライターさ</p>
     // <p>ながらの使い捨て<ruby><rb>非正規社員</rb><rp>(</rp><rt>イレギュラー</rt><rp>)</rp></ruby>である。</p>
 
-    // さすがにメソッドが多くなりすぎな気がする。
-    // Line クラスは構造体にして、メソッドは外部に預けるというのも手ではないか。
-
     constructor(num, str) {
         this.id = num;
         this.original = str;
@@ -35,8 +32,6 @@ class Line {
     // 「｜《」など、山括弧をそのまま使いたい場合のエスケープ処理
     // 《》をいったん〈〈　〉〉に変換する
     escapeMountBracket() {
-        // console.log("this.original in escapeMouuntBracket: ");
-        // console.log(this.original);
         let str = this.original;
         while(str.indexOf("｜《") > -1){
             const index = str.indexOf("｜《");
@@ -45,17 +40,7 @@ class Line {
             strAfterBar = strAfterBar.replace("》", "〉〉");
             str = str.substr(0, index) + strAfterBar;
         }
-        // return str;
         this.original = str;
-    }
-
-    // 規定文字数オーバーのルビ指定を取得
-    getOversizedRuby(str){
-        if(str.indexOf("｜") > -1){
-            return true;
-        } else {
-            return null;
-        }
     }
 
     // ルビが規定文字数を超える場合、ルビを消滅させる
@@ -127,56 +112,20 @@ class Line {
         // 最初は引数に this.original を入れる。
         let str = prevChars;
         let index = -1;
-        // while(p.clientWidth >= this.maxWidth){
         while(this.checkStrWithinLine(str) === false){
             // ステルス<p>に表示して規定サイズオーバーなら 1 文字ずつ減らす
             index = this.getPreviousBrPoint(str);
             str = str.substr(0, index);
-            // p.innerHTML = str;
         }
         this.lines.push("<p>" + str + "</p>");
         if(index > -1){
             this.separateLine(prevChars.substr(index));
         }
-        // str = str.substr(index === -1 ? 0 : index);
-        // if(str.length === this.original.length){
-        //     this.lines.push(this.original);
-        //     return ""; // prevChars
-        // } else {
-        //     this.lines.push(str);
-        //     return this.original.substring(str.length); // prevChars
-        // }
-    }
-
-    // wrapLinesIntoP() {
-    //     this.lines.map((line) => {
-    //         line = "<p>" + line + "</p>";
-    //     });
-    // }
-
-    // exceptionalReturn() {
-    //     while()
-    // }
-
-    // 1行に収まりきらない文字列を、収まるように分割し、<p>タグ内に入れる
-    splitLine() {
-        // まず、山括弧をそのまま表示する指定（例：｜《ルシファー》）をエスケープする
-        // ルビ指定を<ruby>タグ化する（一度<p>タグに放り込んで幅を測定するため）
-        // 1行に収まりきらない文章を、<p>タグに放り込んで実測した上で、規定幅に収まるように複数行に分割する
-        // 各行に<p>タグを追加し、均等割り付けを施す（最終行以外）
-        console.log("Hello World");
-        this.escapeMountBracket();
-        this.deleteRuby();
-        this.convertRuby();
-        this.getBackMountBracket();
     }
 
     test() {
         console.log("Hello World from " + this.id);
         console.log("this.original: " + this.original);
-        // this.escapeMountBracket();
-        // this.splitLine();
-        // console.log(this.original);
         this.escapeMountBracket();
         this.deleteRuby();
         this.convertRuby();
