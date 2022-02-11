@@ -24,8 +24,8 @@ class Line {
     // エスケープした山括弧を元に戻す
     getBackMountBracket() {
         let str = this.original;
-        str = str.replace("〈〈", "《");
-        str = str.replace("〉〉", "》");
+        str = str.replace(/〈〈/g, "《");
+        str = str.replace(/〉〉/g, "》");
         this.original = str;
     }
 
@@ -98,7 +98,7 @@ class Line {
 
     checkStrWithinLine(str){
         const p = document.getElementById("stealth");
-        p.innerText = str;
+        p.innerHTML = str;
         if(p.clientWidth < this.maxWidth){
             return true;
         } else {

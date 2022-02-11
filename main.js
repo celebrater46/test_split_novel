@@ -1,7 +1,7 @@
 "use strict";
 
 const novel = document.getElementById("novel");
-const testLine = "　勤務先は大手家電量販店ビックリカメラ｜六出那《ろくでな》支店。無論、正社員などではない。ここに｜《サラリーマン》は｜存在しない《ナッシング》。会社の都合でいつでも｜馘首《クビ》にされる百円ライターさながらの使い捨て｜非正規社員《イレギュラー》";
+const testLine = "　勤務先は大手家電量販店ビックリカメラ｜六出那《ろくでな》支店。無論、正社員などではない。ここに｜《サラリーマン》は｜存在しない《ナッシング》。会社の都合でいつでも｜馘首《クビ》にされる百円ライターさながらの使い捨て｜非正規社員《イレギュラー》である。";
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
 const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜《ルシファー》。";
 
@@ -68,7 +68,9 @@ const rubyExists = (line) => {
 //
 
 
-const line = new Line(1, testLine);
+const line = new Line(1, testLine + testLine + testLine);
+console.log("testLine*3: ");
+console.log(testLine + testLine + testLine);
 line.test();
 
 let ps = "";
