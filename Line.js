@@ -13,13 +13,24 @@ class Line {
         this.original = str;
         this.lines = [];
         this.evenAllocation = false;
-        this.rubyMax = 30; // ルビ漢字の最大文字数
-        this.furiganaMax = 60; // フリガナの最大文字数
-        this.maxChars = 40; // 1行あたりの最大文字数
-        this.maxWidth = 1000; // 1行あたりの最大幅（px）
+        // this.rubyMax = 30; // ルビ漢字の最大文字数
+        // this.furiganaMax = 60; // フリガナの最大文字数
+        // this.maxChars = 40; // 1行あたりの最大文字数
+        // this.maxWidth = 1000; // 1行あたりの最大幅（px）
     }
 
     // １２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜堕天男《ルシファー》。
+
+    getFontSize() {
+        const p = document.querySelector("p");
+        const size = window.getComputedStyle(p).getPropertyValue('font-size');
+        return parseFloat(size); // px
+    };
+
+    getMaxChars() {
+        const fontSize = this.getFontSize();
+        return Math.floor(maxWidth / fontSize);
+    }
 
     // エスケープした山括弧を元に戻す
     getBackMountBracket() {
@@ -43,15 +54,15 @@ class Line {
         this.original = str;
     }
 
-    // ルビが規定文字数を超える場合、ルビを消滅させる
-    deleteRuby() {
-        let tempStr = this.original;
+    // ルビが規定文字数を超える場合、ルビを消滅させる（bool = false なら、すべてのルビを消滅させる）
+    deleteRuby(line, bool) {
+        let tempStr = line;
         while(tempStr.indexOf("｜") != -1){
             const bar = tempStr.indexOf("｜");
             const start = tempStr.indexOf("《");
             const end = tempStr.indexOf("》");
             const ruby = tempStr.substring(start, end + 1);
-            if(start - bar - 1 > this.rubyMax || end - start - 1 > this.furiganaMax){
+            if(bool || start - bar - 1 > rubyMax || end - start - 1 > furiganaMax){
                 tempStr = tempStr.replace("｜", "");
                 tempStr = tempStr.replace(ruby, "");
             } else {
@@ -66,17 +77,31 @@ class Line {
         tempStr = tempStr.replace(/##/g, "｜");
         tempStr = tempStr.replace(/＜＜/g, "《");
         tempStr = tempStr.replace(/＞＞/g, "》");
-        this.original = tempStr;
+        return tempStr;
     }
 
-    // ｜堕天男《ルシファー》 -> <ruby><rb>堕天男</rb><rp>(</rp><rt>ルシファー</rt><rp>)</rp></ruby>
-    convertRuby() {
+    // ｜堕天男《ルシファー》 -> <ruby><rb>堕天男</rb><rp>(</rp><rt>ルシファー</rt><rp>)</rp></ruby> 10+19+22+フリガナ
+    encodeRuby() {
         let str = this.original;
         if(str.indexOf("｜") > -1 && str.indexOf("《") > -1 && str.indexOf("》") > -1){
             str = str.replace(/｜/g, "<ruby><rb>");
             str = str.replace(/《/g, "</rb><rp>(</rp><rt>");
             str = str.replace(/》/g, "</rt><rp>)</rp></ruby>");
             this.original = str;
+        }
+    }
+
+    // encodeRuby() の逆
+    decodeRuby(line) {
+        let str = line;
+        if(str.indexOf("<ruby><rb>") > -1
+            && str.indexOf("</rb><rp>(</rp><rt>") > -1
+            && str.indexOf("</rt><rp>)</rp></ruby>") > -1)
+        {
+            str = str.replace("<ruby><rb>", /｜/g);
+            str = str.replace("</rb><rp>(</rp><rt>", /《/g);
+            str = str.replace("</rt><rp>)</rp></ruby>", /》/g);
+            return str;
         }
     }
 
@@ -99,18 +124,42 @@ class Line {
     checkStrWithinLine(str){
         const p = document.getElementById("stealth");
         p.innerHTML = str;
-        if(p.clientWidth < this.maxWidth){
+        if(p.clientWidth < maxWidth){
             return true;
         } else {
             return false;
         }
     }
 
+    // ルビタグとフリガナを除いた文字数を計測
+    // countCharsExceptRuby(line) {
+    //     let str = this.decodeRuby(line);
+    //     while(str.indexOf("《") > -1){
+    //         const start = str.indexOf("《");
+    //         const end = str.indexOf("》");
+    //         const rt = str.substring(start, end + 1);
+    //         str = str.replace(rt, "");
+    //     }
+    //     return str.length;
+    // }
+
+    getExtendMaxChars(str) {
+
+    }
+
+    // 課題。ルビタグまで文字数に含まれてしまうので、最大文字数で substr する場合、
+    // ルビタグが含まれていると本来のはるか手前の位置で改行されてしまうバグの解決
+
     // 一行に収まらない文を分割する
     // ruby タグに変換した後の文章を使用（そうしないと正確な width が得られない）
-    separateLine(prevChars) {
+    separateLine(line) {
         // 最初は引数に this.original を入れる。
-        let str = prevChars;
+        const maxChars = this.getMaxChars();
+        const noRuby = this.deleteRuby(line);
+        const threeChars = noRuby.substr(maxChars - 3, 3); // 最大文字数手前の3文字
+        // console.log("maxChars: " + maxChars);
+        let str = line.substring(0, maxChars);
+        console.log("str: " + str);
         let index = -1;
         while(this.checkStrWithinLine(str) === false){
             // ステルス<p>に表示して規定サイズオーバーなら 1 文字ずつ減らす
@@ -119,7 +168,7 @@ class Line {
         }
         this.lines.push("<p>" + str + "</p>");
         if(index > -1){
-            this.separateLine(prevChars.substr(index));
+            this.separateLine(line.substr(index));
         }
     }
 
@@ -127,10 +176,11 @@ class Line {
         console.log("Hello World from " + this.id);
         console.log("this.original: " + this.original);
         this.escapeMountBracket();
-        this.deleteRuby();
-        this.convertRuby();
+        this.original = this.deleteRuby(this.original, true);
+        this.encodeRuby();
         this.getBackMountBracket();
         this.separateLine(this.original);
         console.log(this.lines);
+        console.log(maxWidth);
     }
 }

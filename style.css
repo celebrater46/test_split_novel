@@ -11,6 +11,10 @@ body {
     font-family: Sawarabi Mincho, Sawarabi Gothic, Hiragino Kaku Gothic ProN W3, Helvetica, Meiryo, Tahoma;
 }
 
+p{
+    font-size: 1rem;
+}
+
 div#containter{
     width: 1000px;
     height: 100vh;

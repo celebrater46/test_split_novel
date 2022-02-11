@@ -5,6 +5,23 @@ const testLine = "　勤務先は大手家電量販店ビックリカメラ｜�
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
 const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜《ルシファー》。";
 
+const rubyMax = 30; // ルビ漢字の最大文字数
+const furiganaMax = 60; // フリガナの最大文字数
+const maxWidth = 1000; // 1行あたりの最大幅（px） font 19px == 52 chars
+// const maxChars = 40; // 1行あたりの最大文字数
+// const fontSizeP = getFontSize();
+
+// const getFontSize = () => {
+//     const p = document.querySelector("p");
+//     const size = window.getComputedStyle(p).getPropertyValue('font-size');
+//     return parseFloat(size); // px
+// };
+//
+// const getMaxChars = () => {
+//     const fontSize = getFontSize();
+//     return Math.floor(maxWidth / fontSize);
+// }
+
 const removeFirstSpace = (line) => {
     if(line.substring(0, 1) === "　"){
         return line.substring(1);
@@ -81,5 +98,6 @@ line.lines.map((line) => {
 });
 novel.innerHTML = ps;
 
+// console.log(getFontSize());
 // const line2 = new Line(2, testLine2);
 // line2.test();
