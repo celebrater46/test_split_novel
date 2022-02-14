@@ -9,10 +9,13 @@ const scale = document.getElementById("scale");
 
 const furiganaMax = 60; // フリガナの最大文字数
 const maxWidth = scale.clientWidth;
-
-const rubyMax = 30; // ルビ漢字の最大文字数
 const maxHeight = scale.clientHeight;
-// const maxChars = 40; // 1行あたりの最大文字数
+const fontSize = 20; // px
+const maxChars = Math.floor(maxWidth / fontSize); // 1行あたりの最大文字数
+const rubyMax = 30; // ルビ漢字の最大文字数
+
+// console.log("maxChars: " + maxChars)
+
 // const fontSizeP = getFontSize();
 
 // const getFontSize = () => {
