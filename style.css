@@ -1,14 +1,14 @@
 @charset "UTF-8";
 
 html{
-    font-size: 19px;
+    font-size: 20px;
 }
 
 body {
     background-color: black;
     color: silver;
     text-align: center;
-    font-family: Sawarabi Mincho, Sawarabi Gothic, Hiragino Kaku Gothic ProN W3, Helvetica, Meiryo, Tahoma;
+    font-family: Sawarabi Gothic, Hiragino Kaku Gothic ProN W3, Helvetica, Meiryo, Tahoma;
 }
 
 p{
@@ -16,8 +16,8 @@ p{
 }
 
 div#containter{
-    width: 1000px;
-    height: 100vh;
+    width: 600px;
+    height: 70vh;
     margin: 0 auto;
     background-color: #111111;
 }

@@ -85,10 +85,10 @@ const rubyExists = (line) => {
 //
 
 
-const line = new Line(1, testLine + testLine + testLine);
+// const line = new Line(1, testLine + testLine + testLine);
 // console.log("testLine*3: ");
 // console.log(testLine + testLine + testLine);
-line.test();
+// line.test();
 
 // let ps = "";
 // line.lines.map((line) => {
@@ -101,3 +101,5 @@ line.test();
 // console.log(getFontSize());
 // const line2 = new Line(2, testLine2);
 // line2.test();
+
+const page = new Page(1, ["ハローワールド！"]);
