@@ -16,9 +16,11 @@ class Page {
         let page = document.createElement("div");
         page.id = "p-" + this.id;
         page.classList.add("page");
-        let p = document.createElement("p");
-        p.innerText = this.lines[0];
-        page.appendChild(p);
+        this.lines.map((line) => {
+            let p = document.createElement("p");
+            p.innerText = line;
+            page.appendChild(p);
+        });
         container.appendChild(page);
     }
 

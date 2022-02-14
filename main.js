@@ -4,10 +4,14 @@ const novel = document.getElementById("novel");
 const testLine = "　勤務先は大手家電量販店ビックリカメラ｜六出那《ろくでな》支店。無論、正社員などではない。ここに｜《サラリーマン》は｜存在しない《ノット・イクシスト》。会社の都合でいつでも｜馘首《クビ》にされる百円ライターさながらの使い捨て｜非正規社員《イレギュラー》である。";
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
 const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜《ルシファー》。";
+const scale = document.getElementById("scale");
+// console.log("scale x: " + scale.clientWidth + ", y: " + scale.clientHeight);
+
+const furiganaMax = 60; // フリガナの最大文字数
+const maxWidth = scale.clientWidth;
 
 const rubyMax = 30; // ルビ漢字の最大文字数
-const furiganaMax = 60; // フリガナの最大文字数
-const maxWidth = 1000; // 1行あたりの最大幅（px） font 19px == 52 chars
+const maxHeight = scale.clientHeight;
 // const maxChars = 40; // 1行あたりの最大文字数
 // const fontSizeP = getFontSize();
 
@@ -102,4 +106,8 @@ const rubyExists = (line) => {
 // const line2 = new Line(2, testLine2);
 // line2.test();
 
-const page = new Page(1, ["ハローワールド！"]);
+const page = new Page(1, ["ハローワールド！", "世界よ、こんにちは！"]);
+
+// const test = document.getElementById("test");
+// console.log(test.clientWidth)
+// const hidden = document.getElementById("hidden");
