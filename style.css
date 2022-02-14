@@ -17,6 +17,7 @@ p{
     margin: 0;
     padding: 0;
     line-height: 150%;
+    text-align: left;
 }
 
 p#test{

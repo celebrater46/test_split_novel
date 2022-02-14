@@ -374,8 +374,8 @@ const splitNovel = (novel) => {
     return str;
 }
 
-// novel.innerHTML = splitNovel(sample);
-// novel.innerHTML = splitNovel40(sample);
+// novel.innerHTML = splitNovel(old_sample);
+// novel.innerHTML = splitNovel40(old_sample);
 // novel.innerText = testLine.length; // 107
 // novel.innerText = countCharsExceptRuby(testLine);
 // console.log(testLine.indexOf("｜")); // 19

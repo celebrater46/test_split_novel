@@ -106,7 +106,7 @@ const rubyExists = (line) => {
 // const line2 = new Line(2, testLine2);
 // line2.test();
 
-const page = new Page(1, ["ハローワールド！", "世界よ、こんにちは！"]);
+const page = new Page(1, sampleTexts[0]);
 
 // const test = document.getElementById("test");
 // console.log(test.clientWidth)

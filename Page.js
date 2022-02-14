@@ -2,9 +2,9 @@ class Page {
     // 引数の lines は、1 エピソード分すべてを受け取る
     // ページごとに必要な行を保持し、余った分を次のページインスタンスに引き渡す（linesとして）
 
-    constructor(num, lines) {
+    constructor(num, str) {
         this.id = num;
-        this.lines = lines;
+        this.lines = str.split("\n");
         this.evenAllocation = false;
         this.width = -1; // ページの幅
         this.height = -1; // ページの高さ
