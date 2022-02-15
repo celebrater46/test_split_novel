@@ -32,12 +32,6 @@ div#containter{
     background-color: #111111;
 }
 
-div#novel p{
-    /*display: flex;*/
-    /*justify-content: space-between;*/
-    text-align: left;
-}
-
 div#scale{
     /*ページ生成の基準を決めるスケール*/
     width: 45vw;
