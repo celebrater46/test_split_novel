@@ -77,7 +77,7 @@ const rubyExists = (line) => {
 
 let pages = [];
 let page;
-let remainText = sampleTexts[0];
+let remainText = sampleTexts2[0];
 // let remain = "";
 let i = 0;
 do{
