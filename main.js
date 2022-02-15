@@ -112,6 +112,10 @@ const rubyExists = (line) => {
 
 const page = new Page(1, sampleTexts[0]);
 
+const ruby = "<ruby></ruby>";
+// console.log(ruby.length);
+console.log(ruby.substring(0, 11));
+
 // const test = document.getElementById("test");
 // console.log(test.clientWidth)
 // const hidden = document.getElementById("hidden");
