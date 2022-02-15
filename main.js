@@ -93,7 +93,7 @@ const rubyExists = (line) => {
 //
 
 
-// const line = new Line(1, testLine + testLine + testLine);
+// const line = new LineJs(1, testLine + testLine + testLine);
 // console.log("testLine*3: ");
 // console.log(testLine + testLine + testLine);
 // line.test();
@@ -107,7 +107,7 @@ const rubyExists = (line) => {
 // novel.innerHTML = ps;
 
 // console.log(getFontSize());
-// const line2 = new Line(2, testLine2);
+// const line2 = new LineJs(2, testLine2);
 // line2.test();
 
 const page = new Page(1, sampleTexts[0]);

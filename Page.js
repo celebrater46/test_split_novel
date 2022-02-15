@@ -14,27 +14,35 @@ class Page {
     // 行の中にルビが存在する場合、最大文字数を<ruby>タグとフリガナ分延長する
     getExtendMaxChars(line) {
         // const max = this.getMaxChars();
-        const max = maxChars;
+        // const max = maxChars;
         let num = 0;
         let str = "";
         // console.log(line);
         if(line.indexOf("<ruby>") > -1){
             // console.log("hello");
             str = this.decodeRuby(line);
-            while(str.indexOf("｜") > -1 && str.indexOf("｜") < max){
+            // while(str.indexOf("｜") > -1 && str.indexOf("｜") < max){
+            while(str.indexOf("｜") > -1){
                 // ルビひとつにつき、51 + フリガナ文字数 を追加
                 // const tempStr = str.substring(0, str.indexOf("｜"));
                 // console.log("hello");
                 // const bar = str.indexOf("｜");
-                const start = str.indexOf("《");
+                const start = str.indexOf("《"); // ｜堕天男《ルシファー》
                 const end = str.indexOf("》");
                 // num += bar; // ルビより前の文字数
-                num += end - start - 1; // ルビ漢字の文字数
+                num += end - start - 1; // ふりがなの文字数
                 num += 51; // <ruby><rb></rb><rp>(</rp><rt></rt><rp>)</rp></ruby>
+                // num++; // 縦棒の分の補正値
                 str = str.replace("｜", "‖");
+                str = str.replace("《", "≪");
+                str = str.replace("》", "≫");
             }
         }
-        return max + num;
+        // return max + num;
+        // console.log("maxChars: " + maxChars);
+        // console.log("num: " + num);
+        return maxChars + num;
+        // return max + num + 1;
     }
 
     encodeRuby(line) {
@@ -54,9 +62,13 @@ class Page {
             && str.indexOf("</rb><rp>(</rp><rt>") > -1
             && str.indexOf("</rt><rp>)</rp></ruby>") > -1)
         {
-            str = str.replace("<ruby><rb>", /｜/g);
-            str = str.replace("</rb><rp>(</rp><rt>", /《/g);
-            str = str.replace("</rt><rp>)</rp></ruby>", /》/g);
+            // str = str.replace("<ruby><rb>", /｜/g);
+            // str = str.replace("</rb><rp>(</rp><rt>", /《/g);
+            // str = str.replace("</rt><rp>)</rp></ruby>", /》/g);
+            str = str.replace(/<ruby><rb>/g, "｜");
+            str = str.replace(/<\/rb><rp>\(<\/rp><rt>/g, "《");
+            str = str.replace(/<\/rt><rp>\)<\/rp><\/ruby>/g, "》");
+            // console.log("decode str: " + str);
             return str;
         }
     }
@@ -68,10 +80,14 @@ class Page {
         const char = line.substr(i, 6);
         // 次の文字がルビタグだった場合、ルビタグの後ろの indexOf を返す
         if(char === "<ruby>"){
+            const str = line.substr(i);
+            // console.log("line.substr(i): " + line.substr(i));
             // console.log("char === ruby, i: " + i);
-            const end = line.indexOf("</ruby>");
+            // const end = line.indexOf("</ruby>");
+            const end = str.indexOf("</ruby>");
             // console.log("end: " + end);
-            const ruby = line.substring(i, end + 6);
+            // const ruby = line.substring(i, end + 7);
+            const ruby = str.substr(0, end + 7);
             return ruby.length;
             // return end + 7;
         } else {
@@ -99,16 +115,19 @@ class Page {
                 // console.log("nums:");
                 // console.log(nums);
                 // console.log(nums[]);
-                // console.log(p.innerHTML);
+                // console.log("p.innerHTML: " + p.innerHTML);
                 // console.log(p.clientHeight);
-                // return nums[i - 1];
-                return iNext - 1;
+                // console.log("line: " + line);
+                // console.log("line.substr(): " + line.substr(1));
+                return nums[i - 1];
+                // return iNext - 1;
             } else {
                 const next = this.getNextChar(line, iNext);
                 // console.log("next: " + next);
-                nums.push(next);
+                nums.push(iNext);
                 // p.innerText += line.substr(i, next);
                 p.innerHTML += line.substr(iNext, next);
+                console.log("line.substr(iNext, next): " + line.substr(iNext, next))
                 i++;
                 iNext += next;
                 // console.log("i: " + i);
@@ -136,11 +155,12 @@ class Page {
         let p = document.getElementById("scale_p");
         const basicLineHeight = p.clientHeight;
         const str = line.substring(0, this.getExtendMaxChars(line));
-        // console.log("str: " + str);
+        console.log("str: " + str);
+        console.log("this.getExtendMaxChars(line): " + this.getExtendMaxChars(line));
         p.innerHTML = str;
         // 通常の最大文字数で 1 行に収まらない場合（特殊ルビなどで）、1 行に収まる文字数を算出
         if(p.clientHeight >= basicLineHeight * 2){
-            // console.log("Line Over!!");
+            // console.log("LineJs Over!!");
             // console.log("p.innerText: " + p.innerText);
             // console.log("maxChars: " + maxChars);
             // console.log("maxWidth: " + maxWidth);
@@ -151,7 +171,8 @@ class Page {
             console.log("num: " + num);
             return [line.substring(0, num), line.substring(num)];
         } else {
-            return [str, line.substr(maxChars)];
+            // console.log("HELLOOOOOOOOOO");
+            return [str, line.substr(this.getExtendMaxChars(line))];
         }
         // console.log("test p scale: " + p.clientHeight);
         // console.log("p font-size: " + p.style.fontSize);

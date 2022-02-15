@@ -1,5 +1,5 @@
 "use strict";
-// import {Line} from "Line.js";
+// import {LineJs} from "Line.js.old3";
 
 const rubyMax = 30; // ルビ漢字の最大文字数
 const furiganaMax = 60; // フリガナの最大文字数
@@ -411,5 +411,5 @@ line.lines.map((line) => {
 });
 novel.innerHTML = ps;
 
-// const line2 = new Line(2, testLine2);
+// const line2 = new LineJs(2, testLine2);
 // line2.test();
