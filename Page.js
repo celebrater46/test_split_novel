@@ -4,11 +4,12 @@ class Page {
 
     constructor(num, str) {
         this.id = num;
+        // console.log("str: " + str);
         this.lines = this.encodeRuby(str).split("\n");
         this.evenAllocation = false;
         this.width = -1; // ページの幅
         this.height = -1; // ページの高さ
-        this.createPage();
+        this.remainStr = this.createPage(); // join() によって結合された文字列
     }
 
     // 行の中にルビが存在する場合、最大文字数を<ruby>タグとフリガナ分延長する
@@ -128,10 +129,21 @@ class Page {
                 }
             }
         }
-        let finalP = document.createElement("p");
-        const array = this.separateFinalLine(this.lines[finalLine]);
-        finalP.innerHTML = array[0];
-        page.appendChild(finalP);
-        console.log("array[1]: " + array[1]);
+        if(finalLine > 0){
+            let finalP = document.createElement("p");
+            const array = this.separateFinalLine(this.lines[finalLine]);
+            finalP.innerHTML = array[0];
+            page.appendChild(finalP);
+            // console.log("array[1]: " + array[1]);
+            let lines = this.lines.slice(finalLine + 1);
+            lines.unshift(array[1]) ;
+            console.log("remainLines: ");
+            console.log(lines);
+            // return array[1];
+            return lines.join("\n");
+        } else {
+            return null;
+        }
+
     }
 }

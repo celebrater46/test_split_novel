@@ -32,6 +32,10 @@ div#containter{
     background-color: #111111;
 }
 
+div.page {
+    margin: 100px 0;
+}
+
 div#scale{
     /*ページ生成の基準を決めるスケール*/
     width: 600px;

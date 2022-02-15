@@ -75,5 +75,17 @@ const rubyExists = (line) => {
 // 均等割り付けを行うか否か
 //
 
+let pages = [];
+let page;
+let remainText = sampleTexts[0];
+// let remain = "";
+let i = 0;
+do{
+    page = new Page(i, remainText);
+    pages.push(page);
+    remainText = page.remainStr;
+    // console.log("remainText: " + remainText);
+    i++;
+} while(remainText !== null);
 
-const page = new Page(1, sampleTexts[0]);
+// const page = new Page(1, sampleTexts[0]);
