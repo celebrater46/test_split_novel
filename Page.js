@@ -137,8 +137,8 @@ class Page {
             // console.log("array[1]: " + array[1]);
             let lines = this.lines.slice(finalLine + 1);
             lines.unshift(array[1]) ;
-            console.log("remainLines: ");
-            console.log(lines);
+            // console.log("remainLines: ");
+            // console.log(lines);
             // return array[1];
             return lines.join("\n");
         } else {

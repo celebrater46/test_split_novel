@@ -84,8 +84,10 @@ do{
     page = new Page(i, remainText);
     pages.push(page);
     remainText = page.remainStr;
+    console.log("p-" + i + " clientHeight: " + document.getElementById("p-" + i).clientHeight);
     // console.log("remainText: " + remainText);
     i++;
 } while(remainText !== null);
 
+console.log(maxHeight);
 // const page = new Page(1, sampleTexts[0]);
