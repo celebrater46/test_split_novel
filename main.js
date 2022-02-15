@@ -5,6 +5,7 @@ const testLine = "　勤務先は大手家電量販店ビックリカメラ｜�
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
 const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜《ルシファー》。";
 const scale = document.getElementById("scale");
+// const scaleP = document.getElementById("scale_p");
 // console.log("scale x: " + scale.clientWidth + ", y: " + scale.clientHeight);
 
 const furiganaMax = 60; // フリガナの最大文字数

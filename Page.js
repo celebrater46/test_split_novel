@@ -11,6 +11,24 @@ class Page {
         this.createPage();
     }
 
+    separateFinalLine(line){
+        let p = document.getElementById("scale_p");
+        const basicLineHeight = p.clientHeight;
+        const str = line.substring(0, maxChars);
+        p.innerText = str;
+        if(p.clientHeight > basicLineHeight){
+            console.log("Line Over!!");
+            console.log("p.innerText: " + p.innerText);
+            console.log("maxChars: " + maxChars);
+            console.log("maxWidth: " + maxWidth);
+            console.log("fontSize: " + fontSize);
+        } else {
+            return [str, line.substr(maxChars)];
+        }
+        console.log("test p scale: " + p.clientHeight);
+        console.log("p font-size: " + p.style.fontSize);
+    }
+
     createPage(){
         let container = document.getElementById("containter");
         let page = document.createElement("div");
@@ -32,13 +50,19 @@ class Page {
                 // currentHeight = page.clientHeight;
             } else {
                 if(finalLine === 0){
-                    finalLine = i - 1;
+                    finalLine = i;
                 }
             }
         }
+        let finalP = document.createElement("p");
+        const array = this.separateFinalLine(this.lines[finalLine]);
+        finalP.innerText = array[0];
+        page.appendChild(finalP);
+        console.log("array[1]: " + array[1]);
         console.log(this.lines[finalLine]);
         console.log(page.clientHeight);
         console.log(maxHeight);
+        this.separateFinalLine(this.lines[finalLine]);
 
 
         // let i = 0;
