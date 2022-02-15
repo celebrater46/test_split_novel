@@ -132,5 +132,6 @@ class Page {
         const array = this.separateFinalLine(this.lines[finalLine]);
         finalP.innerHTML = array[0];
         page.appendChild(finalP);
+        console.log("array[1]: " + array[1]);
     }
 }
