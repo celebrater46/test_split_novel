@@ -5,6 +5,8 @@ const testLine = "　勤務先は大手家電量販店ビックリカメラ｜�
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
 const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜《ルシファー》。";
 const scale = document.getElementById("scale");
+// const scaleP = document.getElementById("scale_p");
+// console.log("scale x: " + scale.clientWidth + ", y: " + scale.clientHeight);
 
 const furiganaMax = 60; // フリガナの最大文字数
 const maxWidth = scale.clientWidth;
@@ -12,6 +14,21 @@ const maxHeight = scale.clientHeight;
 const fontSize = 20; // px
 const maxChars = Math.floor(maxWidth / fontSize); // 1行あたりの最大文字数
 const rubyMax = 30; // ルビ漢字の最大文字数
+
+// console.log("maxChars: " + maxChars)
+
+// const fontSizeP = getFontSize();
+
+// const getFontSize = () => {
+//     const p = document.querySelector("p");
+//     const size = window.getComputedStyle(p).getPropertyValue('font-size');
+//     return parseFloat(size); // px
+// };
+//
+// const getMaxChars = () => {
+//     const fontSize = getFontSize();
+//     return Math.floor(maxWidth / fontSize);
+// }
 
 const removeFirstSpace = (line) => {
     if(line.substring(0, 1) === "　"){
@@ -76,4 +93,29 @@ const rubyExists = (line) => {
 //
 
 
+// const line = new LineJs(1, testLine + testLine + testLine);
+// console.log("testLine*3: ");
+// console.log(testLine + testLine + testLine);
+// line.test();
+
+// let ps = "";
+// line.lines.map((line) => {
+//     // const p = document.createTextNode(line);
+//     // novel.appendChild(p);
+//     ps += line;
+// });
+// novel.innerHTML = ps;
+
+// console.log(getFontSize());
+// const line2 = new LineJs(2, testLine2);
+// line2.test();
+
 const page = new Page(1, sampleTexts[0]);
+
+// const ruby = "<ruby></ruby>";
+// // console.log(ruby.length);
+// console.log(ruby.substring(0, 11));
+
+// const test = document.getElementById("test");
+// console.log(test.clientWidth)
+// const hidden = document.getElementById("hidden");
