@@ -5,6 +5,8 @@ const testLine = "　勤務先は大手家電量販店ビックリカメラ｜�
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
 const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜《ルシファー》。";
 const scale = document.getElementById("scale");
+const lineHeight = document.getElementById("scale_p"); // 一行の高さ（ルビなし）
+const lineWithRubyHeight = document.getElementById("scale_p_ruby"); // 一行の高さ（ルビあり）
 
 const furiganaMax = 60; // フリガナの最大文字数
 const maxWidth = scale.clientWidth;
@@ -77,7 +79,7 @@ const rubyExists = (line) => {
 
 let pages = [];
 let page;
-let remainText = sampleTexts2[0];
+let remainText = sampleTexts[0];
 // let remain = "";
 let i = 0;
 do{
@@ -89,5 +91,5 @@ do{
     i++;
 } while(remainText !== null);
 
-console.log(maxHeight);
+console.log("maxHeight: " + maxHeight);
 // const page = new Page(1, sampleTexts[0]);
