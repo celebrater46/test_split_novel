@@ -5,8 +5,8 @@ const testLine = "　勤務先は大手家電量販店ビックリカメラ｜�
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
 const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜《ルシファー》。";
 const scale = document.getElementById("scale");
-// const scaleP = document.getElementById("scale_p");
-// console.log("scale x: " + scale.clientWidth + ", y: " + scale.clientHeight);
+const lineHeight = document.getElementById("scale_p").clientHeight; // 一行の高さ（ルビなし）
+const rubyLineHeight = document.getElementById("scale_p_ruby").clientHeight; // 一行の高さ（ルビあり）
 
 const furiganaMax = 60; // フリガナの最大文字数
 const maxWidth = scale.clientWidth;
@@ -14,21 +14,6 @@ const maxHeight = scale.clientHeight;
 const fontSize = 20; // px
 const maxChars = Math.floor(maxWidth / fontSize); // 1行あたりの最大文字数
 const rubyMax = 30; // ルビ漢字の最大文字数
-
-// console.log("maxChars: " + maxChars)
-
-// const fontSizeP = getFontSize();
-
-// const getFontSize = () => {
-//     const p = document.querySelector("p");
-//     const size = window.getComputedStyle(p).getPropertyValue('font-size');
-//     return parseFloat(size); // px
-// };
-//
-// const getMaxChars = () => {
-//     const fontSize = getFontSize();
-//     return Math.floor(maxWidth / fontSize);
-// }
 
 const removeFirstSpace = (line) => {
     if(line.substring(0, 1) === "　"){
@@ -92,30 +77,90 @@ const rubyExists = (line) => {
 // 均等割り付けを行うか否か
 //
 
+let pages = [];
+// let page;
+// let remainText = sampleTexts[0];
+// let remain = "";
+let i = 0;
+const createPage = (remainText) => {
+    // const page = new Page3Js(i, remainText);
+    // pages.push(page);
+    // remainText = page.remainStr;
+    // console.log("p-" + i + " clientHeight: " + document.getElementById("p-" + i).clientHeight);
+    // // console.log("remainText: " + remainText);
+    // while(true){
+    //     if(page.remainStr !== false){
+    //         if(page.remainStr !== null){
+    //             createPage(page.remainStr);
+    //         }
+    //         i++;
+    //         break;
+    //     }
+    // }
 
-// const line = new LineJs(1, testLine + testLine + testLine);
-// console.log("testLine*3: ");
-// console.log(testLine + testLine + testLine);
-// line.test();
+    new Promise((resolve, reject) => {
+        resolve();
+    }).then(() => {
+        const page = new Page3Js(i, remainText);
+        // if(page.remainStr !== false){
+        // }
+        while(true){
+            if(page.remainStr !== false){
+                return(page);
+            }
+        }
+    }).then((page) => {
+        console.log("page in promise: ");
+        console.log(page);
+        pages.push(page);
+        // console.log(`then1: ${val}`);
+        return page;
+    }).then((page) => {
+        if(page.remainStr !== null && page.remainStr !== false){
+            createPage(page.remainStr);
+        }
+        // while(true){
+        //     if(page.remainStr !== false){
+        //         if(page.remainStr !== null){
+        //             createPage(page.remainStr);
+        //         }
+        //         break;
+        //     }
+        // }
 
-// let ps = "";
-// line.lines.map((line) => {
-//     // const p = document.createTextNode(line);
-//     // novel.appendChild(p);
-//     ps += line;
-// });
-// novel.innerHTML = ps;
+        // console.log(`then2: ${val}`);
+    });
+}
 
-// console.log(getFontSize());
-// const line2 = new LineJs(2, testLine2);
-// line2.test();
+createPage(sampleTexts[0]);
 
-const page = new Page3Js(1, sampleTexts[0]);
 
-// const ruby = "<ruby></ruby>";
-// // console.log(ruby.length);
-// console.log(ruby.substring(0, 11));
+// do{
+//     // page = new Page3Js(i, remainText);
+//     // pages.push(page);
+//     // remainText = page.remainStr;
+//     // console.log("p-" + i + " clientHeight: " + document.getElementById("p-" + i).clientHeight);
+//     // // console.log("remainText: " + remainText);
+//     // i++;
+//
+//     // new Promise((resolve, reject) => {
+//     //     const page = new Page3Js(i, remainText);
+//     //     resolve(page);
+//     // }).then((page) => {
+//     //     pages.push(page);
+//     //     // console.log(`then1: ${val}`);
+//     //     return page;
+//     // }).then((page) => {
+//     //     remainText = page.remainStr;
+//     //     // console.log(`then2: ${val}`);
+//     // });
+//     i++;
+//     // 無限ループ対策
+//     if(i > 100){
+//         console.log("Stopped endless loop!!")
+//         break;
+//     }
+// } while(remainText !== null);
 
-// const test = document.getElementById("test");
-// console.log(test.clientWidth)
-// const hidden = document.getElementById("hidden");
+console.log("maxHeight: " + maxHeight);
+// const page = new Page3Js(1, sampleTexts[0]);

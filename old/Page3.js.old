@@ -1,0 +1,174 @@
+class Page {
+    // 引数の lines は、1 エピソード分すべてを受け取る
+    // ページごとに必要な行を保持し、余った分を次のページインスタンスに引き渡す（linesとして）
+
+    constructor(num, str) {
+        this.id = num;
+        // console.log("str: " + str);
+        console.log("str: " + str);
+        this.lines = this.encodeRuby(str).split("\n");
+        this.evenAllocation = false;
+        this.width = -1; // ページの幅
+        this.height = -1; // ページの高さ
+        this.remainStr = this.createPage(); // join() によって結合された文字列
+    }
+
+    // getter(){
+    //     return this.remainStr;
+    // }
+
+    encodeRuby(line){
+        if(line.indexOf("｜") > -1){
+            return line.replace(
+                /｜([^《]+)《([^》]+)》/g,
+                "<ruby><rb>$1</rb><rp>(</rp><rt>$2</rt><rp>)</rp></ruby>"
+            );
+        }
+        return line;
+    }
+
+// encodeRuby() の逆
+    decodeRuby(line){
+        let str = line;
+        if(str.indexOf("<ruby><rb>") > -1) {
+            str = str.replace(
+                /<ruby><rb>([^\x01-\x7E]+)<\/rb><rp>\(<\/rp><rt>([^\x01-\x7E]+)<\/rt><rp>\)<\/rp><\/ruby>/g,
+                "｜$1《$2》"
+            );
+            return str;
+        }
+    }
+
+// オーバーサイズルビがある場合、何文字にしたら一行に収まるか返す
+    getIndexOfLineBreak(encodedLine) {
+        let scaleTest = document.getElementById("scale_test");
+        scaleTest.innerHTML = "";
+        let str = encodedLine;
+        let num = 0;
+        while(true){
+            if(str.substr(num, 6) === "<ruby>") {
+                // ルビタグの抽出
+                const ruby = str.match(/<ruby><rb>([^\x01-\x7E]+)<\/rb><rp>\(<\/rp><rt>([^\x01-\x7E]+)<\/rt><rp>\)<\/rp><\/ruby>/);
+                scaleTest.innerHTML += ruby[0];
+                if(scaleTest.clientHeight > rubyLineHeight){
+                    return Math.floor(num);
+                } else {
+                    num += ruby[0].length; // 本来一文字先に進むところを、ルビならルビタグ全体分進める
+                }
+                str = str.replace("<ruby>", "<xxxx>"); // 現在のルビタグの無効化
+            } else {
+                scaleTest.innerHTML += str.substr(num, 1);
+                if(scaleTest.clientHeight > rubyLineHeight){
+                    return Math.floor(num);
+                } else {
+                    num++;
+                }
+            }
+            if(num > 5000){
+                return -1; // 無限ループエラー対策
+            }
+        }
+
+    }
+
+    separateFinalLine(line){
+        const hasRuby = line.indexOf("｜");
+        if(hasRuby > -1 && hasRuby < maxChars){
+            const encoded = this.encodeRuby(line);
+            // ルビが１行内にあるなら、新しい改行ポイント indexOf を取得
+            const lineBreak = this.getIndexOfLineBreak(encoded);
+            // console.log("lineBreak: " + lineBreak);
+            // １行で収まりきらない場合は分割
+            if(encoded.length > lineBreak){
+                return [encoded.substr(0, lineBreak), encoded.substr(lineBreak)];
+            }
+        } else {
+            if(line.length > maxChars){
+                const line1 = line.substr(0, maxChars);
+                const line2 = line.substr(maxChars);
+                return [this.encodeRuby(line1), this.encodeRuby(line2)];
+            }
+        }
+        return [this.encodeRuby(line), null];
+    }
+
+    getExcessType(page, finalLine){
+        // createPage() で行がはみ出すのは3つのパターンがあるので、そのうちのどれかを返す
+        // 1: 5行のページとして、1行追加、その後に5行追加
+        // 2: 5行のページとして、5行分の文章追加、その後に行追加
+        // 3: 5行のページとして、4行分の文章追加、 その後に複数行分の追加
+        const lastLineHeight = page.lastElementChild.clientHeight; // 最終行の高さ
+        const withoutLastLinesHeight = page.clientHeight - lastLineHeight; // 最終行以外の行の合計
+        if(maxHeight - withoutLastLinesHeight)
+        page.lastElementChild.remove();
+    }
+
+    createPage(){
+        let container = document.getElementById("containter");
+        let page = document.createElement("div");
+        container.appendChild(page);
+        const pHeight = document.getElementById("scale_p").clientHeight;
+        page.id = "p-" + this.id;
+        page.classList.add("page");
+        let currentHeight = 0;
+        let finalLine = 0;
+        // console.log("maxHeight" + maxHeight);
+        for(let i = 0; i < this.lines.length; i++){
+            if(page.clientHeight < maxHeight){
+                let p = document.createElement("p");
+                p.innerHTML = this.lines[i];
+                page.appendChild(p);
+                currentHeight += pHeight;
+            } else {
+                if(finalLine === 0){
+                    finalLine = i - 1;
+                    // page.pop(); // はみ出した最後の一行を削除
+                }
+            }
+        }
+
+        // page.lastElementChild.remove(); // はみ出した最後の一行を削除
+        if(finalLine > 0){
+            page.lastElementChild.remove(); // はみ出した最後の一行を削除
+            const remainHeight = maxHeight - page.clientHeight;
+            // let array = [];
+            console.log("remainHeight: " + remainHeight);
+            console.log("rubyLineHeight: " + rubyLineHeight);
+            if(remainHeight < rubyLineHeight){
+                // 1 line 削除しても1行分のスペースも残らない場合
+            } else {
+                // 1 line 削除すると1行分のスペースが残る場合
+                // const remainLines = remainHeight / lineHeight;
+                const array = this.separateFinalLine(this.lines[finalLine]);
+                // this.remainStr = array[1];
+                let finalP = document.createElement("p");
+                finalP.innerHTML = array[0];
+                page.appendChild(finalP);
+                let lines = this.lines.slice(finalLine + 1);
+                // console.log("array[1]: " + array[1]);
+                if(array[1] !== null){
+                    lines.unshift(array[1]);
+                }
+                console.log("remainStr: " + lines.join("\n"));
+                return lines.join("\n");
+            }
+            // Object.observe(array, () => {
+            //     console.log("observe() array: ");
+            //     console.log(array);
+            // });
+            // let lines = this.lines.slice(finalLine + 1);
+            // console.log("array[1]: " + array[1]);
+            // if(array[1] !== null){
+            //     lines.unshift(array[1]);
+            // }
+            // console.log("remainLines: ");
+            // console.log(lines);
+            // return array[1];
+            // return lines.join("\n");
+        } else {
+            console.log("remainStr: null");
+            return null;
+        }
+
+    }
+}

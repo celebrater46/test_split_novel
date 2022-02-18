@@ -5,8 +5,8 @@ const testLine = "　勤務先は大手家電量販店ビックリカメラ｜�
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
 const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜《ルシファー》。";
 const scale = document.getElementById("scale");
-const lineHeight = document.getElementById("scale_p"); // 一行の高さ（ルビなし）
-const lineWithRubyHeight = document.getElementById("scale_p_ruby"); // 一行の高さ（ルビあり）
+const lineHeight = document.getElementById("scale_p").clientHeight; // 一行の高さ（ルビなし）
+const rubyLineHeight = document.getElementById("scale_p_ruby").clientHeight; // 一行の高さ（ルビあり）
 
 const furiganaMax = 60; // フリガナの最大文字数
 const maxWidth = scale.clientWidth;
@@ -36,6 +36,78 @@ const convertToEvenAllocation = (line) => {
     return "<div class='first_space'>　</div><div class='even'>" + str + "</div>";
 }
 
+const encodeRuby = (line) => {
+    if(line.indexOf("｜") > -1){
+        return line.replace(
+            /｜([^《]+)《([^》]+)》/g,
+            "<ruby><rb>$1</rb><rp>(</rp><rt>$2</rt><rp>)</rp></ruby>"
+        );
+    }
+    return line;
+}
+
+const decodeRuby = (line) => {
+    let str = line;
+    if(str.indexOf("<ruby><rb>") > -1) {
+        str = str.replace(
+            /<ruby><rb>([^\x01-\x7E]+)<\/rb><rp>\(<\/rp><rt>([^\x01-\x7E]+)<\/rt><rp>\)<\/rp><\/ruby>/g,
+            "｜$1《$2》"
+        );
+        return str;
+    }
+}
+
+const getIndexOfLineBreak = (encodedLine) => {
+    let scaleTest = document.getElementById("scale_test");
+    scaleTest.innerHTML = "";
+    let str = encodedLine;
+    let num = 0;
+    while(true){
+        if(str.substr(num, 6) === "<ruby>") {
+            // ルビタグの抽出
+            const ruby = str.match(/<ruby><rb>([^\x01-\x7E]+)<\/rb><rp>\(<\/rp><rt>([^\x01-\x7E]+)<\/rt><rp>\)<\/rp><\/ruby>/);
+            scaleTest.innerHTML += ruby[0];
+            if(scaleTest.clientHeight > rubyLineHeight){
+                return Math.floor(num);
+            } else {
+                num += ruby[0].length; // 本来一文字先に進むところを、ルビならルビタグ全体分進める
+            }
+            str = str.replace("<ruby>", "<xxxx>"); // 現在のルビタグの無効化
+        } else {
+            scaleTest.innerHTML += str.substr(num, 1);
+            if(scaleTest.clientHeight > rubyLineHeight){
+                return Math.floor(num);
+            } else {
+                num++;
+            }
+        }
+        if(num > 5000){
+            return -1; // 無限ループエラー対策
+        }
+    }
+}
+
+const separateFinalLine = (line) => {
+    const hasRuby = line.indexOf("｜");
+    if(hasRuby > -1 && hasRuby < maxChars){
+        const encoded = encodeRuby(line);
+        // ルビが１行内にあるなら、新しい改行ポイント indexOf を取得
+        const lineBreak = getIndexOfLineBreak(encoded);
+        // console.log("lineBreak: " + lineBreak);
+        // １行で収まりきらない場合は分割
+        if(encoded.length > lineBreak){
+            return [encoded.substr(0, lineBreak), encoded.substr(lineBreak)];
+        }
+    } else {
+        if(line.length > maxChars){
+            const line1 = line.substr(0, maxChars);
+            const line2 = line.substr(maxChars);
+            return [encodeRuby(line1), encodeRuby(line2)];
+        }
+    }
+    return [this.encodeRuby(line), null];
+}
+
 // If found Ruby, the sum of line that includes the Ruby word is over 40 chars?
 // If so, it needs to split the line in front of Ruby word.
 // It wants to make the sentence in front of the Ruby word, even allocation.
@@ -47,49 +119,101 @@ const rubyExists = (line) => {
     }
 }
 
-// 必要事項
-// 改行コード手前の文字がルビワードの途中だったら、ルビタグの手前で改行しなければならない（その場合、改行前のラインには均等割り付けを適用）
-// ルビワードが改行前にすべて収まっていても、フリガナの長さによってはルビワードを改行する必要がある（その場合も均等割り付け）
-
-
-// 解決案
-// とりあえず規定文字数で行を切り出して、ルビという不確定要素の含まれる行は
-// 一度隠し div（body直下で、width が縛られないように）に出力して width を計測し、
-// 規定幅を上回るようなら手前の文字を次の行に送って、という方法はどうか。
-
-// まず、ルビ記号とフリガナを除いた文字数をカウントし、一行の最大文字数までのワードを切り抜いてステルスPに入れる。
-// width < max ならば、そのまま改行させる。
-// width >= max ならば、何らかのルビが含まれている可能性がある。
-// ので、一文字前で改行して、ステルスPに入れてみる。
-// 一文字前に》が存在する場合、ルビ漢字ごと次の行に持っていく。
-// まだ width >= max の場合、その前の文字で改行して……
-
-
-// 全体の流れ
-// まず、山括弧をそのまま表示する指定（例：｜《ルシファー》）をエスケープする
-// ルビ指定を<ruby>タグ化する（一度<p>タグに放り込んで幅を測定するため）
-// 1行に収まりきらない文章を、<p>タグに放り込んで実測した上で、規定幅に収まるように複数行に分割する
-// 各行に<p>タグを追加し、均等割り付けを施す（最終行以外）
-
-// 各行に必要なプロパティ
-// id
-// 本文
-// 均等割り付けを行うか否か
-//
-
 let pages = [];
-let page;
-let remainText = sampleTexts[0];
-// let remain = "";
 let i = 0;
-do{
-    page = new Page(i, remainText);
-    pages.push(page);
-    remainText = page.remainStr;
-    console.log("p-" + i + " clientHeight: " + document.getElementById("p-" + i).clientHeight);
-    // console.log("remainText: " + remainText);
-    i++;
-} while(remainText !== null);
+const createPage = (remainText) => new Promise((resolve, reject) => {
+    pages.push(new Page(i));
+    pages[i].lines = encodeRuby(remainText).split("\n");
+    let container = document.getElementById("containter");
+    let page = document.createElement("div");
+    container.appendChild(page);
+    const pHeight = document.getElementById("scale_p").clientHeight;
+    page.id = "p-" + i;
+    page.classList.add("page");
+    let currentHeight = 0;
+    let finalLine = 0;
+    // console.log("maxHeight" + maxHeight);
+    for(let j = 0; j < pages[i].lines.length; j++){
+        if(page.clientHeight < maxHeight){
+            let p = document.createElement("p");
+            p.innerHTML = pages[i].lines[j];
+            page.appendChild(p);
+            currentHeight += pHeight;
+        } else {
+            if(finalLine === 0){
+                finalLine = j - 1;
+                // page.pop(); // はみ出した最後の一行を削除
+            }
+        }
+    }
+
+    // page.lastElementChild.remove(); // はみ出した最後の一行を削除
+    if(finalLine > 0){
+        page.lastElementChild.remove(); // はみ出した最後の一行を削除
+        const remainHeight = maxHeight - page.clientHeight;
+        // let array = [];
+        // console.log("remainHeight: " + remainHeight);
+        // console.log("rubyLineHeight: " + rubyLineHeight);
+        let lines = pages[i].lines.slice(finalLine + 1);
+        if(remainHeight >= rubyLineHeight){
+            const array = separateFinalLine(pages[i].lines[finalLine]);
+            let finalP = document.createElement("p");
+            finalP.innerHTML = array[0];
+            page.appendChild(finalP);
+            if(array[1] !== null){
+                lines.unshift(array[1]);
+            }
+            // console.log("remainStr: " + lines.join("\n"));
+            // return lines.join("\n");
+            // resolve(lines.join("\n"));
+        }
+        console.log(page.clientHeight);
+        resolve(lines.join("\n"));
+    } else {
+        // console.log("remainStr: null");
+        // console.log("pages[i].lines: ");
+        // console.log(pages[i].lines);
+        // return null;
+        resolve("");
+    }
+// }).then((str) => {
+//     if(str.length > 0){
+//         createPage(str);
+//     }
+    //
+    // const page = new Page(i, remainText);
+    // // if(page.remainStr !== false){
+    // // }
+    // while(true){
+    //     if(page.remainStr !== false){
+    //         return(page);
+    //     }
+    // }
+// }).then((page) => {
+//     console.log("page in promise: ");
+//     console.log(page);
+//     pages.push(page);
+//     // console.log(`then1: ${val}`);
+//     return page;
+// }).then((page) => {
+//     if(page.remainStr !== null && page.remainStr !== false){
+//         createPage(page.remainStr);
+//     }
+});
+
+let remains = "";
+const awaitFunc = async(str) => {
+    // console.log("start");
+    // remains = str;
+    remains = await createPage(str);
+    if(remains.length > 0){
+        awaitFunc(remains);
+    }
+     // Promise が返ってくるまで awaitで 処理停止
+    // console.log(result);
+}
+
+awaitFunc(sampleTexts[0]);
+
 
 console.log("maxHeight: " + maxHeight);
-// const page = new Page(1, sampleTexts[0]);
