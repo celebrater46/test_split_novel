@@ -215,5 +215,4 @@ const awaitFunc = async(str) => {
 
 awaitFunc(sampleTexts[0]);
 
-
 console.log("maxHeight: " + maxHeight);
