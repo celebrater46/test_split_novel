@@ -18,14 +18,36 @@ const maxChars = Math.floor(maxWidth / fontSize); // 1行あたりの最大文�
 // console.log("lineHeight: " + lineHeight);
 // console.log("rubyLineHeight: " + rubyLineHeight);
 
+const convertDot = (line) => {
+    let str = line;
+    let i = 0;
+    while(str.search(/《《[^》]+》》/) > -1){
+        const chars = str.match(/《《[^》]+》》/);
+        let converted = "";
+        for(let j = 2; j < chars[0].length - 2; j++){ // match() returns not String but Array
+            converted += "<ruby><rb>";
+            converted += chars[0].substr(j, 1);
+            converted += "</rb><rp>(</rp><rt>・</rt><rp>)</rp></ruby>";
+        }
+        str = str.replace(/《《[^》]+》》/, converted);
+        i++;
+        if(i > 1000){
+            console.log("endless loop occurred!");
+            break;
+        }
+    }
+    return str;
+}
+
 const encodeRuby = (line) => {
-    if(line.indexOf("｜") > -1){
-        return line.replace(
+    const dotConverted = convertDot(line);
+    if(dotConverted.indexOf("｜") > -1){
+        return dotConverted.replace(
             /｜([^《]+)《([^》]+)》/g,
             "<ruby><rb>$1</rb><rp>(</rp><rt>$2</rt><rp>)</rp></ruby>"
         );
     }
-    return line;
+    return dotConverted;
 }
 
 const decodeRuby = (line) => {
@@ -224,6 +246,8 @@ const awaitFunc = async(str) => {
     }
 }
 
-awaitFunc(sampleTexts[0]);
+awaitFunc(sampleTexts2[0]);
 
 console.log("maxHeight: " + maxHeight);
+
+
