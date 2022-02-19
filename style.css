@@ -26,14 +26,16 @@ p#test{
 }
 
 div#containter{
-    width: 600px;
+    width: 700px;
     height: 70vh;
     margin: 0 auto;
-    background-color: #111111;
+    /*background-color: #111111;*/
 }
 
-div.page {
-    margin: 100px 0;
+div.page{
+    margin: 50px 0;
+    padding: 50px;
+    background-color: #222;
 }
 
 div#scale{

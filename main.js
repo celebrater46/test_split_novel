@@ -163,16 +163,18 @@ const getAdditionalStr = (remainHeight, array) => {
 }
 
 let pages = [];
-let i = 0;
-const createPage = (remainText) => new Promise((resolve, reject) => {
+const createPage = (i, remainText) => new Promise((resolve, reject) => {
     pages.push(new Page(i));
     pages[i].lines = encodeRuby(remainText).split("\n");
     let container = document.getElementById("containter");
+    let outer = document.createElement("div");
+    outer.classList.add("page");
     let page = document.createElement("div");
-    container.appendChild(page);
+    outer.appendChild(page);
+    container.appendChild(outer);
     const pHeight = document.getElementById("scale_p").clientHeight;
     page.id = "p-" + i;
-    page.classList.add("page");
+    // page.classList.add("page");
     let currentHeight = 0;
     let finalLine = 0;
     // console.log("maxHeight" + maxHeight);
@@ -213,10 +215,12 @@ const createPage = (remainText) => new Promise((resolve, reject) => {
     }
 });
 
+let i = 0;
 let remains = "";
 const awaitFunc = async(str) => {
-    remains = await createPage(str);
+    remains = await createPage(i, str);
     if(remains.length > 0){
+        i++;
         awaitFunc(remains);
     }
 }
