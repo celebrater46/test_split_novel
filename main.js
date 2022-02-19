@@ -5,7 +5,7 @@ const testLine = "　勤務先は大手家電量販店ビックリカメラ｜�
 const testLine2 = "　勤務先は大手家電量販店ビックリカメラ。\n";
 const testLine3 = "１２３４５６７８９０１２３４５６７８９０１２３４５６７８９０１２３４５６７８９｜《ルシファー》。";
 const scale = document.getElementById("scale");
-// const lineHeight = document.getElementById("scale_p").clientHeight; // 一行の高さ（ルビなし）
+const lineHeight = document.getElementById("scale_p").clientHeight; // 一行の高さ（ルビなし）
 const rubyLineHeight = document.getElementById("scale_p_ruby").clientHeight; // 一行の高さ（ルビあり）
 
 // const furiganaMax = 60; // フリガナの最大文字数
@@ -15,6 +15,7 @@ const fontSize = 20; // px
 const maxChars = Math.floor(maxWidth / fontSize); // 1行あたりの最大文字数
 // const rubyMax = 30; // ルビ漢字の最大文字数
 
+console.log("lineHeight: " + lineHeight);
 console.log("rubyLineHeight: " + rubyLineHeight);
 
 const encodeRuby = (line) => {
@@ -43,6 +44,7 @@ const getIndexOfLineBreak = (encodedLine, remainLines) => {
     let scaleTest = document.getElementById("scale_test");
     scaleTest.innerHTML = "";
     const maxHeight = rubyLineHeight * remainLines;
+    console.log("maxHeight: " + maxHeight);
     let str = encodedLine;
     let num = 0;
     while(true){
@@ -74,13 +76,13 @@ const getIndexOfLineBreak = (encodedLine, remainLines) => {
 }
 
 // line はエンコードされていない（ルビがないので）
-const getIndexOfLineBreakNoRuby = (line, remainLines) => {
-    const char = line.substr(maxChars, 1);
-    // 行末が始まり括弧だった場合
-    // if(char === "「" || char === "『" || char === "（" || char === "《" || char === "〈" || char === "【" || char === "〚" || char === "［" || char === "〔" || char === "｛"){
-    //
-    // } else if(char === "―" || char === "…")
-}
+// const getIndexOfLineBreakNoRuby = (line, remainLines) => {
+//     const char = line.substr(maxChars, 1);
+//     // 行末が始まり括弧だった場合
+//     // if(char === "「" || char === "『" || char === "（" || char === "《" || char === "〈" || char === "【" || char === "〚" || char === "［" || char === "〔" || char === "｛"){
+//     //
+//     // } else if(char === "―" || char === "…")
+// }
 
 // 禁則処理によって排除される文字数を算出
 const getNumOfDeletedCharsByKinsokuOneLine = (line) => {
@@ -128,9 +130,9 @@ const separateFinalLine = (line, remainLines) => {
     const max = maxChars * remainLines;
     // if(hasRuby > -1 && hasRuby < maxChars){
     console.log("max: " + max);
-    console.log("hasRuby: " + hasRuby);
+    // console.log("hasRuby: " + hasRuby);
     if(hasRuby > -1 && hasRuby < max){
-        console.log("HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+        // console.log("HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
         const encoded = encodeRuby(line);
         // ルビが１行内にあるなら、新しい改行ポイント indexOf を取得
         // const lineBreak = getIndexOfLineBreak(encoded);
@@ -142,7 +144,7 @@ const separateFinalLine = (line, remainLines) => {
         }
     } else {
         // if(line.length > maxChars){
-        console.log("HELLOOOOOOOOOOO");
+        // console.log("HELLOOOOOOOOOOO");
         if(line.length > max){
             const kinsoku = getNumOfDeletedCharsBykinsoku(line);
             const line1 = line.substr(0, max - kinsoku);
@@ -151,6 +153,31 @@ const separateFinalLine = (line, remainLines) => {
         }
     }
     return [this.encodeRuby(line), null];
+}
+
+// 最終行が複数行の場合、一度テスト用のPタグに入れて実測
+const getTruePHeight = (line) => {
+    let scaleP = document.getElementById("scale_p");
+    scaleP.innerHTML = line;
+    return scaleP.clientHeight;
+}
+
+// 実測した最終行が空きスペースより1行以上少ない場合、追加分を再取得
+const getAdditionalStr = (remainHeight, array) => {
+    const trueHeight = getTruePHeight(array[0]);
+    const remainLines = remainHeight - trueHeight;
+    if(remainLines > rubyLineHeight
+        && array[1].length > 0)
+    {
+        // 実測した最終行が空きスペースより1行以上少ない場合、追加分を再取得
+        return separateFinalLine(
+            array[1],
+            Math.floor(remainLines / rubyLineHeight)
+        );
+        // return newArray[1];
+    } else {
+        return ["", array[1]];
+    }
 }
 
 let pages = [];
@@ -191,14 +218,16 @@ const createPage = (remainText) => new Promise((resolve, reject) => {
                 pages[i].lines[finalLine],
                 Math.floor(remainHeight / rubyLineHeight)
             );
+            // const trueHeight = getTruePHeight(array[0]); // 複数行の場合、ルビによって高さが変化するので実測
+            const additionalArray = getAdditionalStr(remainHeight, array);
             let finalP = document.createElement("p");
-            finalP.innerHTML = array[0];
+            finalP.innerHTML = array[0] + additionalArray[0];
             page.appendChild(finalP);
-            if(array[1] !== null){
-                lines.unshift(array[1]);
+            if(additionalArray[1] !== null){
+                lines.unshift(additionalArray[1]);
             }
         }
-        console.log(page.clientHeight);
+        console.log("page.clientHeight: " + page.clientHeight);
         resolve(lines.join("\n"));
     } else {
         resolve("");
