@@ -3,8 +3,4 @@ class Page {
         this.id = num;
         this.lines = [];
     }
-
-    setLines(array){
-        this.lines = array;
-    }
 }

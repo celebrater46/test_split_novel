@@ -174,7 +174,6 @@ const createPage = (i, remainText) => new Promise((resolve, reject) => {
     container.appendChild(outer);
     const pHeight = document.getElementById("scale_p").clientHeight;
     page.id = "p-" + i;
-    // page.classList.add("page");
     let currentHeight = 0;
     let finalLine = 0;
     // console.log("maxHeight" + maxHeight);
